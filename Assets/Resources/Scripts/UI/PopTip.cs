@@ -14,9 +14,8 @@ public class PopTip : MonoBehaviour {
     }
 
     private IEnumerator Start()
-    {
-       
-        yield return new WaitForSeconds(5);
+    {      
+        yield return new WaitForSeconds(2);
         Destroy(gameObject);
     }
 }

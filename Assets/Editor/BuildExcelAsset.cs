@@ -10,32 +10,28 @@ public class BuildExcelAsset : Editor {
 
     static ModelHolder modelHolder =  CreateInstance<ModelHolder>();
     static readonly string path = "Assets/Resources/ExcelAsset/ModelHolder.asset";
-    [MenuItem("Tool/BuildExcelAsset/Camp")]
+    [MenuItem("Tool/BuildExcelAssets")]
     public static void BuildCampAsset()
     {
-        modelHolder.campModels = new CampExcelAccess().CreateList();
+        modelHolder.GenerateAllLists();
         SaveAsset();
     }
-    [MenuItem("Tool/BuildExcelAsset/Terrain")]
-    public static void BuildTerrainAsset()
-    {
+    //[MenuItem("Tool/BuildExcelAsset/Terrain")]
+    //public static void BuildTerrainAsset()
+    //{
 
-        modelHolder.terrainModels = new TerrainExcelAccess().CreateList();
+    //    modelHolder.terrainModels = new TerrainExcelAccess().CreateList();
 
-        SaveAsset();
-    }
-    [MenuItem("Tool/BuildExcelAsset/Terrain_Map")]
-    public static void BuildTerrain_MapAsset()
-    {
+    //    SaveAsset();
+    //}
+    //[MenuItem("Tool/BuildExcelAsset/Terrain_Map")]
+    //public static void BuildTerrain_MapAsset()
+    //{
 
-        //if (!AssetDatabase.Contains(modelHolder))
-        //{
-        //    modelHolder = CreateInstance<ModelHolder>();
-        //}
-        modelHolder.terrain_MapModels = new Terrain_MapExcelAccess().CreateList();
+    //    modelHolder.terrain_MapModels = new Terrain_MapExcelAccess().CreateList();
 
-        SaveAsset();
-    }
+    //    SaveAsset();
+    //}
 
     static void SaveAsset()
     {

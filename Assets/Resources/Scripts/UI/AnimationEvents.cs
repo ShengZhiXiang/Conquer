@@ -4,10 +4,22 @@ using UnityEngine;
 
 public class AnimationEvents : MonoBehaviour {
 
-    public GameObject BGobject;
-    public void SetHideSelf()
+    public GameObject panelRoot;
+
+    
+    public void SetHidePanel()
     {
-        gameObject.SetActive(false);
-        BGobject.SetActive(false);
+        if (panelRoot!=null)
+        {
+            panelRoot.SetActive(false);
+        }    
     }
+
+    public Animator diceResultAni;
+    
+    public void OnDiceEnd()
+    {
+        diceResultAni.SetBool("canShow",true);
+    }
+
 }

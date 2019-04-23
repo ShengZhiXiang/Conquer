@@ -13,6 +13,9 @@ public class LandHighLightSide : MonoBehaviour {
     public void ShowSelf(bool show = true)
     {
         gameObject.SetActive(show);
+        //适应屏幕宽高，使一个图片正好占地图一个单元格大小
+        int rectHeight = Screen.height / ((int)Camera.main.orthographicSize * 2);
+        rectTransform.sizeDelta = new Vector2(rectHeight, rectHeight);
     }
 
     public void SetPosition(Vector2 pos)

@@ -9,9 +9,11 @@ public struct TerrainModel
     public string terrainName;
     public string tilePath;
 
-    public int population;
-    public int gold;
-    public int food;
+    public int initialPopulation;
+    public int growPopulation;
+    public int initalGold;
+    public int growGold;
+    
 
     public string description;
 

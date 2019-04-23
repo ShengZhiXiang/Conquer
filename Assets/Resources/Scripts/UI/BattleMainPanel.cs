@@ -12,7 +12,10 @@ public class BattleMainPanel : UINode {
     public Text _text;
     [SerializeField]
     public Button _btnEndTurn;
-    public InputField _inputField;
+    [SerializeField]
+    public GameObject _curLandInfo;
+    [SerializeField]
+    public GameObject _cardList;
     
     public override void Initial()
     {
@@ -25,24 +28,29 @@ public class BattleMainPanel : UINode {
          );
         _btnEndTurn.onClick.AddListener(delegate() 
              {
-                 BattleManager.Instance.MyTurnEnd();
+                 BattleManager.Instance.BattleTurnEnd();
             }
         );
 
         
         _btnEndTurn.gameObject.SetActive(false);
-        BattleManager.Instance.BattleFinishAttackOneLand += UpdateCurCampInfo;
-        BattleManager.Instance.BattleStart += UpdateCurCampInfo;
-        BattleManager.Instance.BattleStart += OnBattleStartPanelChange;
-        BattleManager.Instance.BattleEndMyTurn += UpdateCurCampInfo;
-        BattleManager.Instance.BattleReSelectMap += UpdateCurCampInfo;
+        BattleManager.Instance.BATTLE_EVENT_FinishAttackOneLand += UpdateCurCampInfo;
+        BattleManager.Instance.BATTLE_EVENT_BattleStart += UpdateCurCampInfo;
+        BattleManager.Instance.BATTLE_EVENT_BattleStart += OnBattleStartPanelChange;
+        BattleManager.Instance.BATTLE_EVENT_EndTurn += UpdateCurCampInfo;
+        BattleManager.Instance.BATTLE_EVENT_ReSelectMap += UpdateCurCampInfo;
+        BattleManager.Instance.BATTLE_EVENT_MyTurnStart += ShowCurLandInfoTip;
+        BattleManager.Instance.BATTLE_EVENT_AITURNStart += HideCurLandInfoTip;
+        BattleManager.Instance.BATTLE_EVENT_BOMB_ANOTHER_LAND += UpdateCurCampInfo;
+        BattleManager.Instance.BATTLE_EVENT_PURCHASE_CANNON += UpdateCurCampInfo;
+        BattleManager.Instance.BATTLE_EVENT_USE_CARD += UpdateCurCampInfo;
         UpdateCurCampInfo();
 
-
+       
 
     }
 
-
+   
     public void SetText(string text)
     {
         _text.text = text;
@@ -57,19 +65,18 @@ public class BattleMainPanel : UINode {
     {
         Camp curCamp = BattleManager.Instance.CurCamp;
         int allBattleUnit = 0;
-        int gold = 0;
-        int population = 0;
-        int food = 0;
+        int ownedGold = curCamp.OwnGold;
+        int curNumOfRound = BattleManager.Instance.CurNumOfRounds;
+        int leftPopulation = 0;
         foreach (Land land in curCamp.ownedLands)
         {
-            Debug.Log(string.Format("{0}坐标中战斗单位有{1}个",land.CoordinateInMap,land.battleUnit));
-            allBattleUnit += land.battleUnit;
-            gold += land.CurTerrian.gold;
-            population += land.CurTerrian.population;
-            food += land.CurTerrian.food;
+            allBattleUnit += land.BattleUnit;
+            leftPopulation += land.leftPopulation;
         }
-        curCampInfo = string.Format("当前阵营:{0},总地块数:{1},总兵力:{2}\n金币:{3},人口:{4},粮食:{5}"
-                                    , curCamp.name, curCamp.ownedLands.Count, allBattleUnit, gold, population, food);
+        curCampInfo = string.Format("*****当前回合:{0}*****\n" +
+                                    "当前阵营:{1},总地块数:{2},总兵力:{3}\n" +
+                                    "****持有总金币:{4},剩余总人口:{5}****",
+                                    curNumOfRound,curCamp.name, curCamp.ownedLands.Count, allBattleUnit, ownedGold, leftPopulation);
         SetText(curCampInfo);
     }
 
@@ -77,6 +84,23 @@ public class BattleMainPanel : UINode {
     {
         _btnEndTurn.gameObject.SetActive(true);
         _btnReMakeMap.gameObject.SetActive(false);
+        _curLandInfo.SetActive(true);
+    }
+    private void ShowCurLandInfoTip()
+    {
+        _curLandInfo.SetActive(true);
+        _cardList.SetActive(true);
+    }
+
+    private void HideCurLandInfoTip()
+    {
+        _curLandInfo.SetActive(false);
+        _cardList.SetActive(false);
+    }
+
+    public void RefreshCurLandInfo(string content)
+    {
+        _curLandInfo.GetComponentInChildren<Text>().text = content;
     }
 
 

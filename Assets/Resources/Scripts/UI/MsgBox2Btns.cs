@@ -19,6 +19,8 @@ public class MsgBox2Btns : UIMsgBox {
 
     public override void SetMsgBox(string content, UnityAction confirmBtnAction, UnityAction cancelBtnAction)
     {
+        _confirmBtn.onClick.RemoveAllListeners();
+        _cancelBtn.onClick.RemoveAllListeners();
         _text.text = content;
         _confirmBtn.onClick.AddListener(confirmBtnAction);
         _cancelBtn.onClick.AddListener(cancelBtnAction);

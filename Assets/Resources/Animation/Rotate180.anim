@@ -180,7 +180,7 @@ AnimationClip:
   m_GenerateMotionCurves: 0
   m_Events:
   - time: 1
-    functionName: SetHideSelf
+    functionName: SetHidePanel
     data: 
     objectReferenceParameter: {fileID: 0}
     floatParameter: 0

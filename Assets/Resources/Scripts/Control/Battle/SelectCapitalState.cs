@@ -34,14 +34,13 @@ public class SelectCapitalState : BattleStateBase {
                     () =>
                     {
                         _lockUpdateMouse = false;
-                        myCamp.capitalLand = clickLand;
-                        BattleManager.Instance.BattleMap.SetCapital(clickLand);
+                        BattleManager.Instance.BattleMap.SetCapital(myCamp, clickLand);
                         GlobalUImanager.Instance.CloseMsgBox(MsgBoxObj);
 
                         //发出战斗开始的事件
-                        if (BattleManager.Instance.BattleStart!=null)
+                        if (BattleManager.Instance.BATTLE_EVENT_BattleStart != null)
                         {
-                            BattleManager.Instance.BattleStart();
+                            BattleManager.Instance.BATTLE_EVENT_BattleStart();
                         }
                         //进入我的回合状态
                         BattleMap battleMap = BattleManager.Instance.BattleMap;
@@ -82,8 +81,8 @@ public class SelectCapitalState : BattleStateBase {
                 mapCoordinate = BattleManager.Instance.BattleMap.MousePos2MapCoordinate(mousePosition);
                 tip.SetPosition(UIpos, mapCoordinate);            
                 CustomTerrain curTerrain = BattleManager.Instance.BattleMap.GetCurMouseLand(mousePosition).CurTerrian;
-                tip.SetText(string.Format("当前地形：{0}\n人口：{1}，金币：{2}，粮食：{3}",
-                                curTerrain.name, curTerrain.population, curTerrain.gold, curTerrain.food));
+                tip.SetText(string.Format("当前地形：{0}\n初始人口：{1}，增长金币：{2}，增长人口：{3}",
+                                curTerrain.name, curTerrain.initialPopulation, curTerrain.growGold, curTerrain.growPopulation));
             }
         }
 
@@ -92,8 +91,7 @@ public class SelectCapitalState : BattleStateBase {
     public override void RefreshUI()
     {
         base.RefreshUI();
-        GlobalUImanager.Instance.OpenPopTip().GetComponent<PopTip>().SetContent("请选择首都");
-        
+        GlobalUImanager.Instance.OpenPopTip().GetComponent<PopTip>().SetContent("请选择首都");     
         GlobalUImanager.Instance.OpenUI(UIEnum.BattleMainPanel);
         
     }

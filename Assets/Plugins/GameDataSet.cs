@@ -7,7 +7,8 @@ public class GameDataSet : Singleton<GameDataSet> {
     public  Dictionary<int, CampModel> CampModelDic = new Dictionary<int, CampModel>();
     public Dictionary<int, TerrainModel> terrainModelDic = new Dictionary<int, TerrainModel>();
     public  Dictionary<int, Terrain_MapModel> terrain_MapModelDic = new Dictionary<int, Terrain_MapModel>();
-    public override void Initial()
+    public Dictionary<int, CardModel> CardModelDic = new Dictionary<int, CardModel>();
+    public void Awake()
     {
         base.Initial();
         ModelHolder modelHolder = Resources.Load<ModelHolder>("ExcelAsset/ModelHolder");
@@ -15,6 +16,11 @@ public class GameDataSet : Singleton<GameDataSet> {
         foreach (CampModel campModel in modelHolder.campModels)
         {
             CampModelDic.Add(campModel.campID, campModel);
+        }
+        //卡牌
+        foreach (CardModel cardModel in modelHolder.cardModels)
+        {
+            CardModelDic.Add(cardModel.cardID,cardModel);
         }
         //地形表
         foreach (TerrainModel terrainModel in modelHolder.terrainModels)

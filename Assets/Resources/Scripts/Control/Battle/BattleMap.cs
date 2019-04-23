@@ -30,11 +30,13 @@ public enum MapHeight
 }
 
 public class BattleMap :MonoBehaviour,IPointerEnterHandler,IPointerClickHandler,IPointerExitHandler {
-    public Tilemap campMap;
-    public Tilemap terrianMap;
-    public Tilemap capitalMap;
-    public Tile[] terrianTiles;
-   
+    [SerializeField]
+    private Tilemap campMap;
+    [SerializeField]
+    private Tilemap terrianMap;
+
+    private static readonly string CAPITAL_TILE_PATH = "Tiles/terrainTiles/capital_unit";
+    private Tile CapitalTile;
     //地图规模   
     private MapSize _mapSize;
     public MapSize MapSize
@@ -76,6 +78,7 @@ public class BattleMap :MonoBehaviour,IPointerEnterHandler,IPointerClickHandler,
     {
         Clear();
         MapSize = BattleManager.Instance.MapSize;
+        CapitalTile = Resources.Load<Tile>(CAPITAL_TILE_PATH);
     }
 
     private void Start()
@@ -218,12 +221,12 @@ public class BattleMap :MonoBehaviour,IPointerEnterHandler,IPointerClickHandler,
                 campMap.SetTile(Map[x, y].CoordinateInMap, curCamp.tile);
                 //在每个阵营的地块坐标List中加入他们的坐标
                 curCampLands.Add(Map[x, y]);
+                //分配完地块给初始金币
+                curCamp.AddCampGold(Map[x, y].initalGold);
             }
             if (BattleManager.Instance.gameMode==GameMode.PVE&&curCamp!=BattleManager.Instance.MyCamp)
             {
-                curCamp.capitalLand = curCamp.ownedLands[3];
-                SetCapital(curCamp.ownedLands[3]);
-                //Debug.Log(string.Format("第{0}号阵营设置了首都", curCamp.campID));
+                SetCapital(curCamp, curCamp.ownedLands[3]);
             }
             
         }
@@ -235,10 +238,11 @@ public class BattleMap :MonoBehaviour,IPointerEnterHandler,IPointerClickHandler,
     /// 设置首都
     /// </summary>
 
-    public void SetCapital(Land land)
+    public void SetCapital(Camp CurCamp,Land land)
     {
-        land.InitialLandInfo(land.CampID, true, true);
-        //Debug.Log(string.Format("当前阵营ID:{0},坐标：{1}，作战单位：{2}", land.CampID, land.CoordinateInMap, land.battleUnit) );
+        land.SetCapital();
+        terrianMap.SetTile(land.CoordinateInMap, CapitalTile);
+        CurCamp.AddCampGold(land.initalGold);
     }
 
 
@@ -396,6 +400,23 @@ public class BattleMap :MonoBehaviour,IPointerEnterHandler,IPointerClickHandler,
             return true;
         }
         return false;
+    }
+
+    /// <summary>
+    /// 给某块地重新绘制阵营层的Tile
+    /// </summary>
+    /// <param name="coordinate"></param>
+    /// <param name="tile"></param>
+    public void ResetCampTile(Vector3Int coordinate,Tile tile)
+    {
+        campMap.SetTile(coordinate,tile);
+    }
+    /// <summary>
+    /// 设置阵营层显隐
+    /// </summary>
+    public void SetCampLayerVisable(bool show)
+    {
+        campMap.gameObject.SetActive(show);
     }
 
     #endregion

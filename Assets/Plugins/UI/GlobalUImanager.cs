@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System;
 
 public enum UIEnum
 {
@@ -80,6 +81,52 @@ public class GlobalUImanager : Singleton<GlobalUImanager> {
         }
 
     }
+    private GameObject _landOperateMenu;
+    public GameObject LandOperateMenu
+    {
+        get
+        {
+            if (_landOperateMenu == null)
+            {
+                GameObject temp = Resources.Load<GameObject>("Prefabs/UI/LandOperateMenu");
+                _landOperateMenu = Instantiate(temp, Instance.UIRoot);
+                _landOperateMenu.gameObject.SetActive(false);
+            }
+            return _landOperateMenu;
+        }
+    }
+    /// <summary>
+    /// 补兵的动画
+    /// </summary>
+    private List<GameObject> _baseUnitSupplyTips;
+    public List<GameObject> BaseUnitSupplyTips
+    {
+        get
+        {
+            if (_baseUnitSupplyTips == null)
+            {
+                _baseUnitSupplyTips = new List<GameObject>();               
+                for (int i = 0; i < 7 ; i++)
+                {                  
+                    GameObject temp = Resources.Load<GameObject>("Prefabs/UI/BattleBaseUnitSupplyTip");
+                    GameObject baseUnitSupplyTip = Instantiate(temp, UIRoot);
+                    _baseUnitSupplyTips.Add(baseUnitSupplyTip);
+                }               
+            }
+            return _baseUnitSupplyTips;
+        }
+    }
+    public void SetBaseUnitSupplyTips(int count)
+    {
+        _baseUnitSupplyTips = new List<GameObject>();
+        for (int i = 0; i < count; i++)
+        {
+            GameObject temp = Resources.Load<GameObject>("Prefabs/UI/BattleBaseUnitSupplyTip");
+            GameObject baseUnitSupplyTip = Instantiate(temp, UIRoot);
+            baseUnitSupplyTip.SetActive(false);
+            _baseUnitSupplyTips.Add(baseUnitSupplyTip);
+        }
+    }
     private GameObject _landTip;
     public GameObject LandTip
     {
@@ -94,24 +141,37 @@ public class GlobalUImanager : Singleton<GlobalUImanager> {
         }
     }
 
-    private GameObject _loadingUI;
-    public GameObject LoadingUI
+    private GameObject _battleReloadMapUI;
+    public GameObject BattleReloadMap
     {
         get
         {
-            if (_loadingUI==null)
+            if (_battleReloadMapUI == null)
             {
-                GameObject temp = Resources.Load<GameObject>("Prefabs/UI/LoadingUI");
-                _loadingUI = Instantiate(temp,UIRoot);
+                GameObject temp = Resources.Load<GameObject>("Prefabs/UI/BattleReloadMapUI");
+                _battleReloadMapUI = Instantiate(temp,UIRoot);
             }
-            return _loadingUI;
+            return _battleReloadMapUI;
         }
     }
 
     public void ShowTip(bool isShow = true)
     {
         LandTip.SetActive(isShow);
+    }
 
+    public GameObject _battleDicePanel;
+    public GameObject BattleDicePanel
+    {
+        get
+        {
+            if (_battleDicePanel == null)
+            {
+                GameObject temp = Resources.Load<GameObject>("Prefabs/UI/BattleDicePanel");
+                _battleDicePanel = Instantiate(temp, UIRoot);
+            }
+            return _battleDicePanel;
+        }
     }
 
     #endregion

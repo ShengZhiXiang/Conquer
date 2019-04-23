@@ -7,9 +7,10 @@ using UnityEngine.Tilemaps;
 public class CustomTerrain {
     public string name;
     public int ID;
-    public int population;
-    public int gold;
-    public int food;
+    public int initialPopulation;
+    public int initalGold;
+    public int growGold;
+    public int growPopulation;
     public string description;
     public string tileName;
     public Tile tile;
@@ -25,11 +26,13 @@ public class CustomTerrain {
     {
         this.ID = terrainModel.terrainID;
         this.name = terrainModel.terrainName;
-        this.population = terrainModel.population;
-        this.gold = terrainModel.gold;
-        this.food = terrainModel.food;
+        this.initialPopulation = terrainModel.initialPopulation;
+        this.initalGold = terrainModel.initalGold;
+        this.growPopulation = terrainModel.growPopulation;
+        this.growGold = terrainModel.growGold;
         this.description = terrainModel.description;
         this.tile = Resources.Load<Tile>(terrainModel.tilePath) as Tile;
     }
+
 
 }

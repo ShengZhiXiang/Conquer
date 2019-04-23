@@ -17,11 +17,12 @@ public class TerrainExcelAccess : ExcelAccessBase<TerrainModel> {
             {
                 terrainID = int.Parse(collection[i][0].ToString()),
                 terrainName = collection[i][1].ToString(),
-                population = int.Parse(collection[i][2].ToString()),
-                gold      = int.Parse(collection[i][3].ToString()),
-                food      = int.Parse(collection[i][4].ToString()),
-                tilePath = collection[i][5].ToString(),
-                description = collection[i][6].ToString()
+                initialPopulation = int.Parse(collection[i][2].ToString()),
+                initalGold = int.Parse(collection[i][3].ToString()),
+                growPopulation = int.Parse(collection[i][4].ToString()),
+                growGold = int.Parse(collection[i][5].ToString()),
+                tilePath = collection[i][6].ToString(),
+                description = collection[i][7].ToString()
             };
 
             result.Add(campModel);

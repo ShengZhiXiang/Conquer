@@ -48,7 +48,13 @@ public class ShowMapInfo : EditorWindow
         int campID = -1;
         int battleUnit = 0;
         string terrianName = "";
+        int leftPopulation = 0;
+        int increasePopulation = 0;
+        bool hasCannon = false;
+        bool isInCool = false;
+        int lastBomb = 0;
         bool opp = false;
+        string cardFunc = "";
         BattleMap tmb = FindObjectOfType<BattleMap>();
         if (tmb != null)
         {
@@ -60,9 +66,14 @@ public class ShowMapInfo : EditorWindow
                 if (x >= 0 && x < tmb.Map.GetLength(0) && y >= 0 && y < tmb.Map.GetLength(1))
                 {
                     campID = tmb.Map[x, y].CampID;
-                    battleUnit = tmb.Map[x, y].battleUnit;
+                    battleUnit = tmb.Map[x, y].BattleUnit;
                     terrianName = tmb.Map[x, y].CurTerrian.name;
-                  //  campPlots = tmb.campdi[tmb.Map[x, y].CampID].ownedLands.Count;
+                    leftPopulation = tmb.Map[x, y].leftPopulation;
+                    increasePopulation = tmb.Map[x, y].increasePopulation;
+                    hasCannon = tmb.Map[x, y].cannon.isOwned;
+                    isInCool = tmb.Map[x, y].cannon.isInCool;
+                    lastBomb = tmb.Map[x, y].cannon.lastFire;
+                    cardFunc = tmb.Map[x, y].BattleCard!=null? tmb.Map[x, y].BattleCard.funcEnum.ToString():"没有卡牌";
                 }
 
             }
@@ -72,12 +83,19 @@ public class ShowMapInfo : EditorWindow
         GUIStyle fontStyle = new GUIStyle();
         fontStyle.normal.textColor = Color.green;   //设置字体颜色
         fontStyle.fontSize = 18;       //字体大小
-        GUI.Label(new Rect(0f, 120f, 500f, 100f), "当前地块坐标:" + str, fontStyle);
-        GUI.Label(new Rect(0f, 150f, 500f, 100f), "当前地块阵营:" + campID.ToString(), fontStyle);
-        GUI.Label(new Rect(0f, 180f, 500f, 100f), "当前地块作战单位:" + battleUnit.ToString(), fontStyle);
-        GUI.Label(new Rect(0f, 210f, 500f, 100f), "当前地块地形:" + terrianName, fontStyle);
-       // GUI.Label(new Rect(0f, 240f, 500f, 100f), "当前阵营地块数量:" + campPlots, fontStyle);
-        GUI.Label(new Rect(0f, 270f, 500f, 100f), "地图是否为空:" + opp , fontStyle);
+        GUI.Label(new Rect(0f, 60f, 500f, 100f), "当前地块坐标:" + str, fontStyle);      
+        GUI.Label(new Rect(0f, 90f, 500f, 100f), "当前地块地形:" + terrianName, fontStyle);
+        GUI.Label(new Rect(0f, 120f, 500f, 100f), "当前地块剩余人口:" + leftPopulation, fontStyle);
+        GUI.Label(new Rect(0f, 150f, 500f, 100f), "当前地块每回合增长人口:" + increasePopulation, fontStyle);
+        GUI.Label(new Rect(0f, 180f, 500f, 100f), "地图是否为空:" + opp , fontStyle);
+        GUI.Label(new Rect(0f, 210f, 500f, 100f), "**********************");
+        //作战信息
+        GUI.Label(new Rect(0f, 240f, 500f, 100f), "当前地块阵营:" + campID.ToString(), fontStyle);
+        GUI.Label(new Rect(0f, 270f, 500f, 100f), "当前地块作战单位:" + battleUnit.ToString(), fontStyle);
+        GUI.Label(new Rect(0f, 300f, 500f, 100f), "当前地块是否有炮:" + hasCannon.ToString(), fontStyle);
+        GUI.Label(new Rect(0f, 330f, 500f, 100f), "当前地块的炮是否处于冷却:" + isInCool.ToString(), fontStyle);
+        GUI.Label(new Rect(0f, 360f, 500f, 100f), "当前地块的炮上一次开火回合:" + lastBomb.ToString(), fontStyle);
+        GUI.Label(new Rect(0f, 390f, 500f, 100f), "当前地块的卡牌:" + cardFunc, fontStyle);
         Handles.EndGUI();
 
         //刷新界面，保证坐标实时跟随鼠标

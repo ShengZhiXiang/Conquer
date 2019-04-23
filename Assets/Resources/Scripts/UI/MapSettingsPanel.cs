@@ -26,7 +26,7 @@ public class MapSettingsPanel : UINode {
 
     private void OnStartBtnClick()
     {        
-        BattleManager.Instance.GenerateMapInScene(_mapHeight, _campCount);
+        BattleManager.Instance.GenerateMapInScene((MapHeight)_mapHeight, _campCount);
         GlobalUImanager.Instance.CloseUI(UIEnum.MapSettingsPanel);
     }
 

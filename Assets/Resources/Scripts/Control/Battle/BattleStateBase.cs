@@ -4,11 +4,12 @@ using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.EventSystems;
 
-public class BattleStateBase  {
+public class BattleStateBase   {
 
     public virtual void RefreshUI() { }
     public virtual void RegisteMouseEvent(ref UnityAction mapEnterAction,ref UnityAction<Land, PointerEventData> mapClickAction,ref UnityAction mapExitAction) { }
     public virtual void OnUpdateFunc() { }
+    public virtual void EnterState() { }
 
     /// <summary>
     /// 需要注册鼠标事件的EnterState方法
@@ -20,14 +21,16 @@ public class BattleStateBase  {
     {
         RefreshUI();
         RegisteMouseEvent(ref mapEnterAction,ref mapClickAction,ref mapExitAction);
+        EnterState();
     }  
     
     /// <summary>
     /// 不需要注册鼠标事件的EnterState方法
     /// </summary>
-    public  void EnterState()
+    public  void EnterStateWithoutMouse()
     {
         RefreshUI();
+        EnterState();
     }
 
     /// <summary>
