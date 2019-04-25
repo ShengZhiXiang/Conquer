@@ -13,13 +13,13 @@ public class AttackStateBase  {
 
     public LandOperateMenu LandOperateMenu = GlobalUImanager.Instance.LandOperateMenu.GetComponent<LandOperateMenu>();
     
-    private List<Vector3Int> NeighborEnemyCoordinates = new List<Vector3Int>();
+    private List<Land> NeighborEnemyLands = new List<Land>();
     public MyRoundState MyRound;
     public Land attackLand;
     
     public virtual void ClickAction(Land clickLand){ }
     public virtual void UpdateFunc() { }
-    public virtual void OnClickCard(int cardID) { }
+    public virtual void OnClickCard() { }
 
     public AttackStateBase(MyRoundState myRound)
     {
@@ -40,9 +40,9 @@ public class AttackStateBase  {
     }
     public void SetNeighborEnemyHighLight(Vector3Int coordinate)
     {
-        if (NeighborEnemyCoordinates.Count != 0)
+        if (NeighborEnemyLands.Count != 0)
         {
-            NeighborEnemyCoordinates.Clear();
+            NeighborEnemyLands.Clear();
         }
         Vector3Int neighborCoordinate;
         //以0，0为中心块，检查其四周环绕的六个地块
@@ -69,11 +69,10 @@ public class AttackStateBase  {
                                                    : new Vector3Int(coordinate.x + 1, coordinate.y - 1, 0);
         CheckNeighborLandHighlight(neighborCoordinate);
 
-        for (int i = 0; i < NeighborEnemyCoordinates.Count; i++)
+        foreach (Land land in NeighborEnemyLands)
         {
-            GlobalUImanager.Instance.MultipleLandHighLight[i].GetComponent<LandHighLightSide>().SetPosition(NeighborEnemyCoordinates[i]);
+            land.LandHighLightSide.ShowSelf(HighLightType.Mutiple);
         }
-
 
     }
 
@@ -84,28 +83,33 @@ public class AttackStateBase  {
             Land land = BattleManager.Instance.BattleMap.Coordinate2Land(coordinate);
             if (land.CampID != attackLand.CampID)
             {
-                NeighborEnemyCoordinates.Add(land.CoordinateInMap);
+                NeighborEnemyLands.Add(land);
             }
         }
     }
     public void CancelHighlight()
     {
-
-        foreach (GameObject landHighlight in GlobalUImanager.Instance.MultipleLandHighLight)
+        int i = NeighborEnemyLands.Count;
+        foreach (Land land in NeighborEnemyLands)
         {
-            landHighlight.GetComponent<LandHighLightSide>().ShowSelf(false);
+            land.LandHighLightSide.ShowSelf(HighLightType.Mutiple,false);
         }
-        if (NeighborEnemyCoordinates.Count == 0)
+        if (NeighborEnemyLands.Count == 0)
         {
             return;
         }
-        NeighborEnemyCoordinates.Clear();
+        NeighborEnemyLands.Clear();
     }
     public void Cancel()
     {
         HideLandOpearteMenu();
         CancelHighlight();
     }
+
+    
+
+    
+    
     #endregion
 }
 

@@ -29,15 +29,15 @@ public enum BattleCardTriggerTime
 }
 
 public class BattleCardManager : Singleton<BattleCardManager> {
-    private BattleCard _curSelectCard;
-    public BattleCard CurSelectCard
+    private BattleCardUI _curSelectCard;
+    public BattleCardUI CurSelectCard
     {
         get { return _curSelectCard;}
         set { _curSelectCard = value;}
     }
 
-    private Dictionary<int,BattleCardUI> _battleCardUIs;
-    public Dictionary<int, BattleCardUI> BattleCardUIs
+    private List<BattleCardUI> _battleCardUIs;
+    public List<BattleCardUI> BattleCardUIs
     {
         get { return _battleCardUIs; }
         set { _battleCardUIs = value; }
@@ -62,7 +62,7 @@ public class BattleCardManager : Singleton<BattleCardManager> {
     private void InitBattleCardDic()
     {
           battleCardDic = new Dictionary<int, BattleCard>();
-          BattleCardUIs = new Dictionary<int, BattleCardUI>();
+          BattleCardUIs = new List<BattleCardUI>();
 
         Sprite sprite;
         foreach (CardModel cardModel in GameDataSet.Instance.CardModelDic.Values)
@@ -80,30 +80,39 @@ public class BattleCardManager : Singleton<BattleCardManager> {
 
     }
     #region 卡牌操作函数
-    public void OnClickCard(int cardID)
+    public void OnClickCard(int arrayIndex)
     {
         //如果当前没有选中的卡牌，则设置一下当前选中的卡牌
         if (CurSelectCard == null)
-        {
-            CurSelectCard = battleCardDic[cardID];
-            //弹出卡牌     
-            BattleCardUIs[cardID].PopSelf();
+        {             
+            BattleCardUIs[arrayIndex].PopSelf();
+            CurSelectCard = BattleCardUIs[arrayIndex];
+            BattleManager.Instance.SetCampLandsHighLight(battleCardDic[CurSelectCard.cardId].isSelfCard);
         }
         //否则如果点的是同一张卡牌，则视为取消选中
-        else if (CurSelectCard.ID == cardID)
+        else if (CurSelectCard.arrayIndex == arrayIndex)
         {
-            BattleCardUIs[cardID].BackToNormal();
-            CurSelectCard = null;
+            CancelSelectCard();
         }
         //点的是另一张卡牌
         else
         {
-            BattleCardUIs[CurSelectCard.ID].BackToNormal();
-            BattleCardUIs[cardID].PopSelf();
-            CurSelectCard = battleCardDic[cardID];
+            BattleCardUIs[CurSelectCard.arrayIndex].BackToNormal();
+            BattleCardUIs[arrayIndex].PopSelf();
+            CurSelectCard = BattleCardUIs[arrayIndex];    
+            BattleManager.Instance.SetCampLandsHighLight(battleCardDic[CurSelectCard.cardId].isSelfCard);
         }
-        BattleManager.Instance.OnClickCard(cardID);
+        BattleManager.Instance.OnClickCard();
+        
 
+    }
+
+    public void CancelSelectCard()
+    {
+        BattleCardUIs[CurSelectCard.arrayIndex].BackToNormal();
+        bool isMycampCard = battleCardDic[CurSelectCard.cardId].isSelfCard;
+        CurSelectCard = null;
+        BattleManager.Instance.SetCampLandsHighLight(isMycampCard, false);
     }
     public void OnMouseEnterCard(int cardID)
     {
@@ -125,17 +134,29 @@ public class BattleCardManager : Singleton<BattleCardManager> {
             BattleCardUI battleCardUI = card.GetComponent<BattleCardUI>();
             int index = UnityEngine.Random.Range(3001, 3006);
             BattleCard battleCard = battleCardDic[index];
-            battleCardUI.InitCardInfo(battleCard);
-            BattleCardUIs.Add(battleCard.ID, battleCardUI);
+            int arrayIndex = BattleCardUIs.Count;
+            battleCardUI.InitCardInfo(battleCard,arrayIndex);
+            BattleCardUIs.Add( battleCardUI);
         }
     }
     public void DestroyCard()
-    {
-       
-        Destroy(BattleCardUIs[CurSelectCard.ID].gameObject);
-        BattleCardUIs.Remove(CurSelectCard.ID);
-        CurSelectCard = null; 
+    {  
+        Destroy(BattleCardUIs[CurSelectCard.arrayIndex].gameObject);
+        BattleCardUIs.Remove(CurSelectCard);
+        //重新赋值下顺序
+        for (int i = 0 ; i < BattleCardUIs.Count ; i++)
+        {
+            BattleCardUIs[i].arrayIndex = i ;
+        }
+        bool isMycampCard = battleCardDic[CurSelectCard.cardId].isSelfCard;
+        CurSelectCard = null;
+        BattleManager.Instance.SetCampLandsHighLight(isMycampCard, false);
     }
+    public BattleCard GetCurBattleCard()
+    {
+        return battleCardDic[CurSelectCard.cardId];
+    }
+
     private int AirRaid(Land land)
     {
         land.BattleUnit = 1;

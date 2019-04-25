@@ -28,7 +28,7 @@ public class BattleMainPanel : UINode {
          );
         _btnEndTurn.onClick.AddListener(delegate() 
              {
-                 BattleManager.Instance.BattleTurnEnd();
+                 StartCoroutine(BattleManager.Instance.BattleTurnEnd());
             }
         );
 

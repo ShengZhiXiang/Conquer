@@ -49,38 +49,37 @@ public class GlobalUImanager : Singleton<GlobalUImanager> {
     {
         get
         {
-            if (_singleLandHighLight == null)
-            {
-                GameObject temp = Resources.Load<GameObject>("Prefabs/UI/LandHighLightSide");
-                _singleLandHighLight = Instantiate(temp, UIRoot);
-            }
             return _singleLandHighLight;
         }
-
-    }
-
-    private List<GameObject> _multipleLandHighLight;
-    public List<GameObject> MultipleLandHighLight
-    {
-        get
+        set
         {
-            if (_multipleLandHighLight == null)
-            {
-                _multipleLandHighLight = new List<GameObject>();
-                for (int i = 0;i<6;i++)
-                {
-                    GameObject temp = Resources.Load<GameObject>("Prefabs/UI/LandHighLightSide");
-                    GameObject landHighlight = Instantiate(temp, UIRoot);
-                    landHighlight.SetActive(false);
-                    _multipleLandHighLight.Add(landHighlight) ;
-
-                }
-                
-            }
-            return _multipleLandHighLight;
+            _singleLandHighLight = value;
         }
 
     }
+
+    //private List<GameObject> _multipleLandHighLight;
+    //public List<GameObject> MultipleLandHighLight
+    //{
+    //    get
+    //    {
+    //        if (_multipleLandHighLight == null)
+    //        {
+    //            _multipleLandHighLight = new List<GameObject>();
+    //            for (int i = 0;i<6;i++)
+    //            {
+    //                GameObject temp = Resources.Load<GameObject>("Prefabs/UI/LandHighLightSide");
+    //                GameObject landHighlight = Instantiate(temp, UIRoot);
+    //                landHighlight.SetActive(false);
+    //                _multipleLandHighLight.Add(landHighlight) ;
+
+    //            }
+                
+    //        }
+    //        return _multipleLandHighLight;
+    //    }
+
+    //}
     private GameObject _landOperateMenu;
     public GameObject LandOperateMenu
     {
@@ -95,38 +94,7 @@ public class GlobalUImanager : Singleton<GlobalUImanager> {
             return _landOperateMenu;
         }
     }
-    /// <summary>
-    /// 补兵的动画
-    /// </summary>
-    private List<GameObject> _baseUnitSupplyTips;
-    public List<GameObject> BaseUnitSupplyTips
-    {
-        get
-        {
-            if (_baseUnitSupplyTips == null)
-            {
-                _baseUnitSupplyTips = new List<GameObject>();               
-                for (int i = 0; i < 7 ; i++)
-                {                  
-                    GameObject temp = Resources.Load<GameObject>("Prefabs/UI/BattleBaseUnitSupplyTip");
-                    GameObject baseUnitSupplyTip = Instantiate(temp, UIRoot);
-                    _baseUnitSupplyTips.Add(baseUnitSupplyTip);
-                }               
-            }
-            return _baseUnitSupplyTips;
-        }
-    }
-    public void SetBaseUnitSupplyTips(int count)
-    {
-        _baseUnitSupplyTips = new List<GameObject>();
-        for (int i = 0; i < count; i++)
-        {
-            GameObject temp = Resources.Load<GameObject>("Prefabs/UI/BattleBaseUnitSupplyTip");
-            GameObject baseUnitSupplyTip = Instantiate(temp, UIRoot);
-            baseUnitSupplyTip.SetActive(false);
-            _baseUnitSupplyTips.Add(baseUnitSupplyTip);
-        }
-    }
+  
     private GameObject _landTip;
     public GameObject LandTip
     {
@@ -185,6 +153,30 @@ public class GlobalUImanager : Singleton<GlobalUImanager> {
                 _uiRoot = GameObject.Find("UIRoot").transform;
             }
             return _uiRoot;
+        }
+    }
+    private Transform _ui_Land_SupplyTips;
+    public Transform UI_Land_SupplyTips
+    {
+        get
+        {
+            if (_ui_Land_SupplyTips == null)
+            {
+                _ui_Land_SupplyTips = GameObject.Find("UIRoot/LandSupplyTips").transform;
+            }
+            return _ui_Land_SupplyTips;
+        }
+    }
+    private Transform _ui_Land_HighLights;
+    public Transform Ui_Land_HighLights
+    {
+        get
+        {
+            if (_ui_Land_HighLights == null)
+            {
+                _ui_Land_HighLights = GameObject.Find("UIRoot/LandHighLights").transform;
+            }
+            return _ui_Land_HighLights;
         }
     }
 

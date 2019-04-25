@@ -172,6 +172,7 @@ MonoBehaviour:
   image: {fileID: 114463470194818922}
   canvasTransform: {fileID: 224504599438835104}
   rectTransform: {fileID: 224653265356187346}
+  animator: {fileID: 95071097032318724}
 --- !u!222 &222897760906247824
 CanvasRenderer:
   m_ObjectHideFlags: 1

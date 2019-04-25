@@ -8,7 +8,7 @@ public class BattleBaseUnitSupplyTip : UINode {
     public Image image;
     public RectTransform canvasTransform;
     public RectTransform rectTransform;
-    
+    public Animator animator;
     public void ShowSelf()
     {
         this.gameObject.SetActive(true);
@@ -27,11 +27,17 @@ public class BattleBaseUnitSupplyTip : UINode {
         RectTransformUtility.ScreenPointToLocalPointInRectangle(
         canvasTransform as RectTransform, screenPos, null, out UIpos);
         SetPosition(UIpos);
-        ShowSelf();
+       // ShowSelf();
     }
     public void SetPosition(Vector2 pos)
     {
         rectTransform.anchoredPosition = pos;
+    }
+
+    public float GetAnimationTime()
+    {
+        float time = animator.GetCurrentAnimatorStateInfo(0).length;
+        return time;
     }
 
 }

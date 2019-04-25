@@ -217,7 +217,6 @@ public class BattleManager : Singleton<BattleManager> {
     {
         MapHeight = mapHeight;
         int mapWidth = (int)mapHeight * 16 / 9;
-        GlobalUImanager.Instance.SetBaseUnitSupplyTips((int)mapHeight+1);
         MapSize = new MapSize((int)mapHeight, mapWidth);
         Debug.Log(string.Format("MapSize的高度是{0},宽度是{1},高度一半是{2},宽度一半是{3}",MapSize.Height,MapSize.Width,MapSize.HeightOffset,MapSize.WidthOffset));
         CampCount = campCount;
@@ -476,10 +475,12 @@ public class BattleManager : Singleton<BattleManager> {
     /// <summary>
     /// 回合结束
     /// </summary>
-    public void BattleTurnEnd()
+  public  IEnumerator  BattleTurnEnd()
     {
         OnTurnEnd();
 
+        float time = CurCamp.ownedLands[0].BattleBaseUnitSupplyTip.GetAnimationTime();
+        yield return new WaitForSeconds(time);
         //当前回合数+1
         CurNumOfRounds++;
 
@@ -510,30 +511,16 @@ public class BattleManager : Singleton<BattleManager> {
         }
     }
 
-    private void OnTurnEnd()
+    private void   OnTurnEnd()
     {
-      
+
         //补给当前阵营各地块
         foreach (Land land in CurCamp.ownedLands)
         {      
-            land.EndTurnSupply();         
+            land.EndTurnSupply();
         }
-        List<GameObject> BaseUnitSupplyTips = GlobalUImanager.Instance.BaseUnitSupplyTips;
-        int index = 0;
-        foreach (GameObject BaseUnitSupplyTip in BaseUnitSupplyTips)
-        {
-            BattleBaseUnitSupplyTip battleBaseUnitSupplyTip = BaseUnitSupplyTip.GetComponent<BattleBaseUnitSupplyTip>();
-            if (index < CurCamp.ownedLands.Count)
-            {
-                battleBaseUnitSupplyTip.SetImage(CurCamp.baseUnitSprite);
-                battleBaseUnitSupplyTip.SetPosition(CurCamp.ownedLands[index].CoordinateInMap);
-                index++;
-            }
-            else
-            {
-                break;
-            }
-        }
+      
+        
         //遍历该阵营下所有地块，结算
         Debug.Log("当前结算阵营" + CurCamp.name);
         Cannon cannon;
@@ -577,12 +564,12 @@ public class BattleManager : Singleton<BattleManager> {
     }
 
     #region 战斗卡牌函数
-    public void OnClickCard(int cardID)
+    public void OnClickCard()
     {
         if (CurBattleState is MyRoundState)
         {
             MyRoundState myRound = CurBattleState as MyRoundState;
-            myRound.CurAttackState.OnClickCard(cardID); 
+            myRound.CurAttackState.OnClickCard(); 
         }
        
     }
@@ -595,6 +582,37 @@ public class BattleManager : Singleton<BattleManager> {
         if (CurCamp == MyCamp)
         {
             BattleCardManager.Instance.SupplyCard();
+        }
+    }
+
+    /// <summary>
+    /// 设置阵营的所有地块高亮
+    /// myCampHighLight为真时设置当前阵营所有地块
+    /// myCampHighLight为假时除当前阵营，设置其他所有地块
+    /// </summary>
+    /// <param name="myCampHighLight"></param>
+    public void SetCampLandsHighLight(bool myCampHighLight, bool isShow = true)
+    {
+        GlobalUImanager.Instance.SingleLandHighLight = null;
+        if (myCampHighLight)
+        {
+            foreach (Land land in CurCamp.ownedLands)
+            {
+                land.LandHighLightSide.ShowSelf(HighLightType.Mutiple, isShow);
+            }
+        }
+        else
+        {
+            foreach (Camp camp in CampDic.Values)
+            {
+                if (camp.campID != CurCamp.campID)
+                {
+                    foreach (Land land in camp.ownedLands)
+                    {
+                        land.LandHighLightSide.ShowSelf(HighLightType.Mutiple, isShow);
+                    }
+                }
+            }
         }
     }
     #endregion

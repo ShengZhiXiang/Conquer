@@ -80,7 +80,10 @@ public class MyRoundState : BattleStateBase {
         }
         else
         {
-            GlobalUImanager.Instance.SingleLandHighLight.GetComponent<LandHighLightSide>().ShowSelf(false);
+            if (GlobalUImanager.Instance.SingleLandHighLight != null)
+            {
+                GlobalUImanager.Instance.SingleLandHighLight.GetComponent<LandHighLightSide>().ShowSelf(HighLightType.Single,false);
+            }   
         }
 
         if (Input.GetKeyDown(KeyCode.Space))
@@ -108,6 +111,7 @@ public class MyRoundState : BattleStateBase {
     {
         CurAttackState.HideLandOpearteMenu();
         CurAttackState.CancelHighlight();
+        BattleCardManager.Instance.CancelSelectCard();
     }
 
     private void SetCurSelectLandInfo(Land land)

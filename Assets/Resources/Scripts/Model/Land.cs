@@ -123,6 +123,44 @@ public class Land  {
 
     public Action OnLandSet2Capital;
 
+
+    #region UI
+    private BattleBaseUnitSupplyTip _battleBaseUnitSupplyTip;
+    public BattleBaseUnitSupplyTip BattleBaseUnitSupplyTip
+    {
+        get
+        {
+            if (_battleBaseUnitSupplyTip == null)
+            {
+                GameObject temp = Resources.Load<GameObject>("Prefabs/UI/BattleBaseUnitSupplyTip");
+                GameObject go = UnityEngine.Object.Instantiate(temp, GlobalUImanager.Instance.UI_Land_SupplyTips);
+                go.SetActive(false);
+                _battleBaseUnitSupplyTip = go.GetComponent<BattleBaseUnitSupplyTip>();
+                _battleBaseUnitSupplyTip.SetPosition(CoordinateInMap);
+            }
+            return _battleBaseUnitSupplyTip;
+        }
+    }
+
+    private LandHighLightSide _landHighLightSide;
+    public LandHighLightSide LandHighLightSide
+    {
+        get
+        {
+            if (_landHighLightSide == null)
+            {
+                GameObject temp = Resources.Load<GameObject>("Prefabs/UI/LandHighLightSide");
+                GameObject go = UnityEngine.Object.Instantiate(temp, GlobalUImanager.Instance.Ui_Land_HighLights);
+                go.SetActive(false);
+                _landHighLightSide = go.GetComponent<LandHighLightSide>();
+                _landHighLightSide.SetPosition(CoordinateInMap);
+            }
+            return _landHighLightSide;
+        }
+    }
+
+
+    #endregion
     public Land(Vector3Int coordinateInMap)
     {
         CoordinateInMap = coordinateInMap;
@@ -211,8 +249,8 @@ public class Land  {
         {
             leftPopulation = maxPopulation;
         }
-        
-
+        BattleBaseUnitSupplyTip.SetImage(BattleManager.Instance.CurCamp.baseUnitSprite);
+        BattleBaseUnitSupplyTip.ShowSelf();
     }
 
     /// <summary>

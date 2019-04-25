@@ -43,24 +43,25 @@ public class NoneAttackState : AttackStateBase
             //如果指向的是己方阵营，并且当前地块可选择，显示高亮框
             if (CurMouseLandCanSelect(MouseHoverLand))
             {
-                GlobalUImanager.Instance.SingleLandHighLight.GetComponent<LandHighLightSide>().SetPosition(MouseHoverLand.CoordinateInMap);
+                MouseHoverLand.LandHighLightSide.ShowSelf(HighLightType.Single);
+                //GlobalUImanager.Instance.SingleLandHighLight.GetComponent<LandHighLightSide>().SetPosition(MouseHoverLand.CoordinateInMap);
             }
             else
             {
-                GlobalUImanager.Instance.SingleLandHighLight.GetComponent<LandHighLightSide>().ShowSelf(false);
+               // GlobalUImanager.Instance.SingleLandHighLight.GetComponent<LandHighLightSide>().ShowSelf(false);
+                MouseHoverLand.LandHighLightSide.ShowSelf(HighLightType.Single,false);
             }
         }
         else
         {
-            GlobalUImanager.Instance.SingleLandHighLight.GetComponent<LandHighLightSide>().ShowSelf(false);
+            GlobalUImanager.Instance.SingleLandHighLight.GetComponent<LandHighLightSide>().ShowSelf(HighLightType.Single,false);
         }
     }
-    public override void OnClickCard(int cardID)
+    public override void OnClickCard()
     {
-        base.OnClickCard(cardID);
+        base.OnClickCard();
         HideLandOpearteMenu();
         MyRound.CurAttackState = MyRound.AttackStateDic[AttackStateEnum.CardAttack];
-        Debug.Log("弹起卡牌！！！");
 
     }
     #endregion
@@ -84,7 +85,7 @@ public class NoneAttackState : AttackStateBase
                     MyRound.CurAttackState = MyRound.AttackStateDic[AttackStateEnum.ArmyAttack];
                     MyRound.CurAttackState.attackLand = attackLand;                 
                     //周围敌方格子有高亮框
-                    SetNeighborEnemyHighLight(attackLand.CoordinateInMap);                    
+                    MyRound.CurAttackState.SetNeighborEnemyHighLight(attackLand.CoordinateInMap);                    
                 }
                 else
                 {
@@ -132,7 +133,7 @@ public class NoneAttackState : AttackStateBase
                     //设置贴图为有炮的
                     //todo
                     //周围敌方格子有高亮框
-                    SetNeighborEnemyHighLight(attackLand.CoordinateInMap);                   
+                    MyRound.CurAttackState.SetNeighborEnemyHighLight(attackLand.CoordinateInMap);                   
                 }
                 else//否则提示处于冷却中
                 {

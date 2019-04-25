@@ -17,10 +17,10 @@ public class CardAttackState : AttackStateBase {
             Debug.Log("这块地上只能有一张牌");
             return;
         }
-        BattleCard CurCard =  BattleCardManager.Instance.CurSelectCard;
+        BattleCard CurCard =  BattleCardManager.Instance.GetCurBattleCard();
         bool curLandIsMyCampLand = clickLand.CampID == BattleManager.Instance.CurCamp.campID;
         //如果卡牌放的位置是对的，并且剩余资源足够使用卡牌则放牌，否则跳过
-        if ( CurCard!=null && !(CurCard.isSelfCard ^ curLandIsMyCampLand) && clickLand.UseCardConsume(CurCard))
+        if (CurCard != null && !(CurCard.isSelfCard ^ curLandIsMyCampLand) && clickLand.UseCardConsume(CurCard))
         {
             if (CurCard.triggerTime.Equals(BattleCardTriggerTime.IMMEDIATELY))
             {
@@ -31,18 +31,22 @@ public class CardAttackState : AttackStateBase {
                 clickLand.BattleCard = CurCard;
             }
             BattleCardManager.Instance.DestroyCard();
-            
+            Debug.Log("使用成功");
+        }
+        else
+        {
+            BattleCardManager.Instance.CancelSelectCard();
+            Debug.Log("收回卡牌！！！");
         }
 
         MyRound.CurAttackState = MyRound.AttackStateDic[AttackStateEnum.NoneAttack];
-        Debug.Log("收回卡牌！！！");
+        
 
     }
-    public override void OnClickCard(int cardID)
+    public override void OnClickCard()
     {
-        base.OnClickCard(cardID);
+        base.OnClickCard();
         MyRound.CurAttackState = MyRound.AttackStateDic[AttackStateEnum.NoneAttack];
-        Debug.Log("收回卡牌！！！");
     }
     public override void UpdateFunc()
     {

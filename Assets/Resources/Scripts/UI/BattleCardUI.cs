@@ -14,14 +14,15 @@ public class BattleCardUI : UINode {
     public RectTransform rectTransform;
 
     public int cardId;
+    public int arrayIndex;
 
-
-    public void InitCardInfo(BattleCard battleCard )
+    public void InitCardInfo(BattleCard battleCard ,int arrayIndex)
     {
         this.cardId = battleCard.ID;
         BG.sprite = battleCard.sprite;
         this.goldCost.text = battleCard.goldCost.ToString();
         this.cardName.text = battleCard.cardName;
+        this.arrayIndex = arrayIndex;
     }
 
     public override void Initial()
@@ -29,17 +30,17 @@ public class BattleCardUI : UINode {
         base.Initial();
         UGUIEventListener.Get(gameObject).onClick = delegate() 
         {
-            BattleCardManager.Instance.OnClickCard(cardId);
+            BattleCardManager.Instance.OnClickCard(arrayIndex);
         };
 
         UGUIEventListener.Get(gameObject).onEnter = delegate ()
         {
-            BattleCardManager.Instance.OnMouseEnterCard(cardId);
+            BattleCardManager.Instance.OnMouseEnterCard(arrayIndex);
         };
 
         UGUIEventListener.Get(gameObject).onExit = delegate ()
         {
-            BattleCardManager.Instance.OnMouseExitCard(cardId);
+            BattleCardManager.Instance.OnMouseExitCard(arrayIndex);
         };
         
     }

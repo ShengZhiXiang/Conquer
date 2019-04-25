@@ -29,11 +29,10 @@ public class BombAttackState : AttackStateBase {
         base.UpdateFunc();
     }
 
-    public override void OnClickCard(int cardID)
+    public override void OnClickCard()
     {
-        base.OnClickCard(cardID);
+        base.OnClickCard();
         CancelHighlight();
-        Debug.Log("弹起卡牌！！！");
         MyRound.CurAttackState = MyRound.AttackStateDic[AttackStateEnum.CardAttack];
     }
 
