@@ -109,6 +109,10 @@ public class BattleCardManager : Singleton<BattleCardManager> {
 
     public void CancelSelectCard()
     {
+        if (CurSelectCard==null)
+        {
+            return;
+        }
         BattleCardUIs[CurSelectCard.arrayIndex].BackToNormal();
         bool isMycampCard = battleCardDic[CurSelectCard.cardId].isSelfCard;
         CurSelectCard = null;
@@ -191,7 +195,7 @@ public class BattleCardManager : Singleton<BattleCardManager> {
     private int AttackLoseAddGold(Land land)
     {
         Camp curCamp = BattleManager.Instance.CurCamp;
-        BattleManager.Instance.CurCamp.AddCampGold(curCamp.attackConsumeGold * 2);
+        BattleManager.Instance.CurCamp.AddCampGold(curCamp.AttackConsumeGold * 2);
         return 0;
     }
 

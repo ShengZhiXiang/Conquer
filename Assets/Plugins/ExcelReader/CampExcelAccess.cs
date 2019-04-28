@@ -21,7 +21,8 @@ public  class CampExcelAccess : ExcelAccessBase<CampModel> {
                 campID = int.Parse(collection[i][0].ToString()),
                 campName = collection[i][1].ToString(),
                 tilePath = collection[i][2].ToString(),
-                baseUnitSpritePath = collection[i][3].ToString()
+                baseUnitSpritePath = collection[i][3].ToString(),
+                campClassName = collection[i][4].ToString()
             };
 
             result.Add(campModel);

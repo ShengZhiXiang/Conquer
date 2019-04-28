@@ -13,25 +13,25 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   campModels:
   - campID: 1001
-    campName: "\u7F8E\u5E1D"
+    campName: "\u7F8E\u56FD"
     tilePath: Tiles/campTiles/Blue
     baseUnitSpritePath: Sprite/BattleUnit/soldier/US_soldier
-    FuncEnum: 
+    campClassName: USA
   - campID: 1002
-    campName: "\u5FB7\u610F\u5FD7"
+    campName: "\u5FB7\u56FD"
     tilePath: Tiles/campTiles/Red
     baseUnitSpritePath: Sprite/BattleUnit/soldier/Germany_soldier
-    FuncEnum: 
+    campClassName: GERMANY
   - campID: 1003
-    campName: "\u6CD5\u5170\u897F"
+    campName: "\u65E5\u672C"
     tilePath: Tiles/campTiles/Green
     baseUnitSpritePath: Sprite/BattleUnit/soldier/japan_soldier
-    FuncEnum: 
+    campClassName: JAPAN
   - campID: 1004
-    campName: "\u82CF\u7EF4\u57C3"
+    campName: "\u82CF\u8054"
     tilePath: Tiles/campTiles/Black
     baseUnitSpritePath: Sprite/BattleUnit/soldier/soviet_soldier
-    FuncEnum: 
+    campClassName: SOVIET
   terrainModels:
   - terrainID: 2001
     terrainName: "\u5C71\u5DDD"

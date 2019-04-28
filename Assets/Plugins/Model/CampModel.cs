@@ -8,6 +8,6 @@ public struct CampModel  {
     public string campName;
     public string tilePath;
     public string baseUnitSpritePath;
-    public string FuncEnum;
+    public string campClassName;
 
 }

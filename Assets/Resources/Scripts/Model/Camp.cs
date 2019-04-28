@@ -3,6 +3,13 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Tilemaps;
+public enum CAMP_NAME
+{
+    USA,
+    GERMANY,
+    JAPAN,
+    SOVIET,
+}
 
 public struct CampBuffCardEffect
 {
@@ -33,19 +40,7 @@ public class Camp  {
     public List<Land> ownedLands;
     //初始分到的地块数
     public int initialLands;
-    //当前阵营拥有的总金币
-    private int _ownedGold;
-    public int OwnGold
-    {
-        get { return _ownedGold; }
-        private set { _ownedGold = value; }
-    }
-    //该阵营军队进攻一次所需要的金币
-    public int attackConsumeGold = 2;
-    //该阵营买高炮所需要的金币
-    public int buyCannonConsumeGold = 5;
-    //该阵营用高炮轰炸一次需要的金币
-    public int cannonBombConsumeGold = 2;
+    public int OwnGold { get; private set; }
     //是否有卡牌效果的buff
     public bool hasCardBuff;
     //卡牌效果额外buff
@@ -54,16 +49,41 @@ public class Camp  {
     public Tile tile;
     //该阵营的基本士兵图片
     public Sprite baseUnitSprite;
-    public Camp(int campID,string name, int initialLands, Tile tile,Sprite baseUnitSprite)
+    //玩家名字
+    public string PlayerName;
+    public Camp(int campID, string name, int initialLands, Tile tile, Sprite baseUnitSprite ,string PlayerName)
     {
         this.campID = campID;
         this.name = name;
         this.tile = tile;
         this.initialLands = initialLands;
         this.baseUnitSprite = baseUnitSprite;
+        this.PlayerName = PlayerName;
         ownedLands = new List<Land>();
     }
-
+    #region 子类阵营需要重写的数值
+    //该阵营军队进攻一次所需要的金币
+    public virtual int AttackConsumeGold
+    {
+        get { return 2; }
+    }
+    //该阵营买高炮所需要的金币
+    public virtual int BuyCannonCoumeGold
+    {
+        get { return 5; }
+    }
+    //该阵营用高炮轰炸一次需要的金币
+    public virtual int CannonAttackConsumGold
+    {
+        get { return 3; }
+    }
+    //高炮轰炸一次炸掉的单位数
+    public virtual int CannonBombPoint
+    {
+        get { return UnityEngine.Random.Range(2, 5); }
+    }
+    #endregion
+    #region 公用方法
     public void OnRegenerateMap()
     {
         OwnGold = 0;
@@ -79,26 +99,26 @@ public class Camp  {
 
     public bool CampCanMove()
     {
-        int realConsumeGold = hasCardBuff ? attackConsumeGold - CampBuffCardEffect.AttackConsumeReduce : attackConsumeGold;
+        int realConsumeGold = hasCardBuff ? AttackConsumeGold - CampBuffCardEffect.AttackConsumeReduce : AttackConsumeGold;
         return OwnGold >= realConsumeGold;
     }
     public bool PurchaseCannon()
     {
-        if (OwnGold > buyCannonConsumeGold)
+        if (OwnGold > BuyCannonCoumeGold)
         {
-            ReduceCampGold(buyCannonConsumeGold);
+            ReduceCampGold(BuyCannonCoumeGold);
             return true;
         }
         return false;      
     }
     public void AttackLandConsumeGold()
     {
-        int realConsumeGold = hasCardBuff ? attackConsumeGold - CampBuffCardEffect.AttackConsumeReduce : attackConsumeGold;
+        int realConsumeGold = hasCardBuff ? AttackConsumeGold - CampBuffCardEffect.AttackConsumeReduce : AttackConsumeGold;
         ReduceCampGold(realConsumeGold);
     }
     public bool CannonAttack()
     {
-        int realConsumeGold = hasCardBuff ? cannonBombConsumeGold - CampBuffCardEffect.BombConsumeReduce : cannonBombConsumeGold;
+        int realConsumeGold = hasCardBuff ? CannonAttackConsumGold - CampBuffCardEffect.BombConsumeReduce : CannonAttackConsumGold;
         if (OwnGold > realConsumeGold)
         {
             ReduceCampGold(realConsumeGold);
@@ -106,8 +126,6 @@ public class Camp  {
         }
         return false;
     }
-
-    
     /// <summary>
     /// 每个回合结束时把阵营持续进攻buff去掉
     /// </summary>
@@ -116,15 +134,15 @@ public class Camp  {
         hasCardBuff = false;
         CampBuffCardEffect.Reset();
     }
-    //高炮轰炸一次炸掉的单位数
-    public int CannonBombPoint = 3;
-    //以后用实现虚方法的方式实现根据阵营不同，掷骰子增益不同的效果
+
+    #endregion
+    #region 子类阵营需要重写的虚方法
     /// <summary>
     /// 根据Land获取额外掷骰子的次数
     /// </summary>
     /// <param name="land"></param>
     /// <returns></returns>
-    public int GetExtraDiceRollsAttackByLand(Land land,bool isAttack)
+    public virtual int GetExtraDiceRollsAttackByLand(Land land,bool isAttack)
     {
         int result = 0;
         if (isAttack)
@@ -146,7 +164,7 @@ public class Camp  {
         return result ;
     }
 
-    
+    #endregion
 
-    
+
 }

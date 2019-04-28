@@ -4,6 +4,19 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Tilemaps;
 using UnityEngine.EventSystems;
+
+public struct InitalCampParam
+{
+    public string PlayerName;
+    public string CampName;
+    public int CampID;
+    public InitalCampParam(string playerName,string campName,int campID)
+    {
+        PlayerName = playerName;
+        CampName = campName;
+        CampID = campID;
+    }
+}
 public enum BattleStateEnum
 {
     None,
@@ -40,7 +53,8 @@ public class BattleManager : Singleton<BattleManager> {
         get { return _campDic; }
         set { _campDic = value; }
     }
-
+    private int curCampIndex = 0;
+    List<int> campIDs = new List<int>();
     public Dictionary<BattleStateEnum, BattleStateBase> BattleStateDictionary;
     private void Awake()
     {
@@ -57,6 +71,7 @@ public class BattleManager : Singleton<BattleManager> {
         BATTLE_EVENT_BattleStart += InitalNumOfRounds;
         BATTLE_EVENT_FinishAttackOneLand += OnFinshAttackOneLand;
         BATTLE_EVENT_MyTurnStart += SetCurCampCanAttack;
+        BATTLE_EVENT_MyTurnStart += MyTurnStartAction;
     }
     //我的阵营
     private Camp _myCamp;
@@ -196,10 +211,10 @@ public class BattleManager : Singleton<BattleManager> {
     /// </summary>
     /// <param name="mapSize"></param>
     /// <param name="campCount"></param>
-    public void GenerateMapInScene(MapHeight mapHeight, int campCount)
+    public void GenerateMapInScene(MapHeight mapHeight, List<InitalCampParam> initalCampParams)
     {
-        SetMapInfo(mapHeight, campCount);
-        SetCamps();
+        SetMapInfo(mapHeight, initalCampParams.Count);
+        SetCamps(initalCampParams);
 
         GameObject battleMap = Resources.Load("Prefabs/GameMap") as GameObject;
         GameObject MapInstance = Instantiate(battleMap);
@@ -218,35 +233,35 @@ public class BattleManager : Singleton<BattleManager> {
         MapHeight = mapHeight;
         int mapWidth = (int)mapHeight * 16 / 9;
         MapSize = new MapSize((int)mapHeight, mapWidth);
-        Debug.Log(string.Format("MapSize的高度是{0},宽度是{1},高度一半是{2},宽度一半是{3}",MapSize.Height,MapSize.Width,MapSize.HeightOffset,MapSize.WidthOffset));
+        //Debug.Log(string.Format("MapSize的高度是{0},宽度是{1},高度一半是{2},宽度一半是{3}",MapSize.Height,MapSize.Width,MapSize.HeightOffset,MapSize.WidthOffset));
         CampCount = campCount;
     }
     /// <summary>
     /// 设置对战信息
     /// </summary>
-    public void SetCamps()
+    public void SetCamps(List<InitalCampParam> campParams)
     {
-        Dictionary<int, CampModel> tempDic = GameDataSet.Instance.CampModelDic;
+        Dictionary<int, CampModel> campModelDic = GameDataSet.Instance.CampModelDic;
         CampDic = new Dictionary<int, Camp>();
+        if (campIDs!=null)
+        {
+            campIDs.Clear();
+        }
+        foreach(InitalCampParam campParam in campParams)
+        {
+            campIDs.Add(campParam.CampID);
+        }
         int allLands = MapSize.Height*MapSize.Width;
         int landCountPerCamp = allLands / CampCount;
-        //这里是按顺序从CampAsset里拿资源，后期应该改成自己选阵营     
-        List<int> campIDs = new List<int>(tempDic.Keys);
-        Tile campTile;
-        Sprite baseUnitSprite;
-        string campName;
-        for (int i = 0; i < CampCount - 1; i++)
+        CampModel campModel;
+        for (int i = 0; i < campIDs.Count - 1; i++)
         {
-            campTile = Resources.Load<Tile>(tempDic[campIDs[i]].tilePath);
-            baseUnitSprite = Resources.Load<Sprite>(tempDic[campIDs[i]].baseUnitSpritePath);
-            campName = tempDic[campIDs[i]].campName;
-            CampDic.Add(campIDs[i], new Camp(campIDs[i],campName, landCountPerCamp, campTile, baseUnitSprite));
+            campModel = campModelDic[campIDs[i]];
+            CampDic.Add(campModel.campID,CreateCamp(campModel,landCountPerCamp, campParams[i].PlayerName));
         }
         int leftPlots = allLands - (landCountPerCamp * (CampCount - 1));
-        campTile = Resources.Load<Tile>(tempDic[campIDs[CampCount - 1]].tilePath);
-        baseUnitSprite = Resources.Load<Sprite>(tempDic[campIDs[CampCount - 1]].baseUnitSpritePath);
-        campName = tempDic[campIDs[CampCount - 1]].campName;
-        CampDic.Add(campIDs[CampCount - 1], new Camp(campIDs[CampCount - 1],campName, leftPlots, campTile,baseUnitSprite));
+        campModel = campModelDic[campIDs[CampCount - 1]];
+        CampDic.Add(campModel.campID, CreateCamp(campModel, leftPlots, campParams[CampCount-1].PlayerName));
 
 
         //暂时设置我的阵营为第一个阵营
@@ -254,7 +269,33 @@ public class BattleManager : Singleton<BattleManager> {
         //设置当前阵营
         CurCamp = MyCamp;
     }
-     
+
+    public Camp CreateCamp(CampModel campModel,int landCount,string playerName)
+    {
+        Tile campTile = Resources.Load<Tile>(campModel.tilePath);
+        Sprite baseUnitSprite = Resources.Load<Sprite>(campModel.baseUnitSpritePath);
+        Camp result;
+        CAMP_NAME campClassName = (CAMP_NAME)Enum.Parse(typeof(CAMP_NAME), campModel.campClassName);
+        switch (campClassName)
+        {
+            case CAMP_NAME.GERMANY:
+                result = new Camp_Germany(campModel.campID, campModel.campName, landCount, campTile, baseUnitSprite, playerName);
+                break;
+            case CAMP_NAME.USA:
+                result = new Camp_USA(campModel.campID, campModel.campName, landCount, campTile, baseUnitSprite, playerName);
+                break;
+            case CAMP_NAME.JAPAN:
+                result = new Camp_Japan(campModel.campID, campModel.campName, landCount, campTile, baseUnitSprite, playerName);
+                break;
+            case CAMP_NAME.SOVIET:
+                result = new Camp_Soviet(campModel.campID, campModel.campName, landCount, campTile, baseUnitSprite, playerName);
+                break;
+            default:
+                result = new Camp(campModel.campID, campModel.campName, landCount, campTile, baseUnitSprite, playerName);
+                break;
+        }
+        return result; 
+    }
 
    public  IEnumerator  ReGenerateMap()
     {
@@ -318,6 +359,7 @@ public class BattleManager : Singleton<BattleManager> {
         //卡牌分配
         //todo
         Debug.Log("我的回合开始惹！");
+        GlobalUImanager.Instance.OpenPopTip().GetComponent<PopTip>().SetContent(CurCamp.PlayerName+"的回合!");
     }
     #endregion
     public void TwoLandFight(Land attackLand, Land defenceLand)
@@ -470,8 +512,7 @@ public class BattleManager : Singleton<BattleManager> {
         }
     }
 
-    private int curCampIndex = 0;
-    List<int> campIDs;
+   
     /// <summary>
     /// 回合结束
     /// </summary>

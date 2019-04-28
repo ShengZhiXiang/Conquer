@@ -8,6 +8,7 @@ public class GameDataSet : Singleton<GameDataSet> {
     public Dictionary<int, TerrainModel> terrainModelDic = new Dictionary<int, TerrainModel>();
     public  Dictionary<int, Terrain_MapModel> terrain_MapModelDic = new Dictionary<int, Terrain_MapModel>();
     public Dictionary<int, CardModel> CardModelDic = new Dictionary<int, CardModel>();
+    public Dictionary<string, int> CampName_IDDic = new Dictionary<string, int>();
     public void Awake()
     {
         base.Initial();
@@ -16,6 +17,7 @@ public class GameDataSet : Singleton<GameDataSet> {
         foreach (CampModel campModel in modelHolder.campModels)
         {
             CampModelDic.Add(campModel.campID, campModel);
+            CampName_IDDic.Add(campModel.campName,campModel.campID);
         }
         //卡牌
         foreach (CardModel cardModel in modelHolder.cardModels)
