@@ -19,6 +19,8 @@ public struct CampBuffCardEffect
     public int BombConsumeReduce;
     //普通进攻减少的消耗金币
     public int AttackConsumeReduce;
+    //回合结束时额外补给的兵力
+    public int ExtraSupplyUnit;
     //攻下一个地块胜利之后的回调
     public Action<Land> VictoryCB;
 
@@ -27,6 +29,7 @@ public struct CampBuffCardEffect
         attackExtraEndPoint = 0;
         BombConsumeReduce = 0;
         AttackConsumeReduce = 0;
+        ExtraSupplyUnit = 0;
         VictoryCB = null;
     }
 }
@@ -51,7 +54,22 @@ public class Camp  {
     public Sprite baseUnitSprite;
     //玩家名字
     public string PlayerName;
-    public Camp(int campID, string name, int initialLands, Tile tile, Sprite baseUnitSprite ,string PlayerName)
+
+    public int cardStartIndex;
+    public int cardEndIndex;
+    //阵营特殊卡牌枚举-方法表
+    public Dictionary<BattleCardFuncEnum, Func<Land, int>> CardEnum_FuncDic;
+    
+    /// <summary>
+    /// 该阵营在对战中拥有的卡牌列表
+    /// </summary>
+    private List<BattleCardUI> _battleCardUIs;
+    public List<BattleCardUI> BattleCardUIs
+    {
+        get { return _battleCardUIs; }
+        set { _battleCardUIs = value; }
+    }
+    public Camp(int campID, string name, int initialLands, Tile tile, Sprite baseUnitSprite ,string PlayerName,int cardStartIndex,int cardEndIndex)
     {
         this.campID = campID;
         this.name = name;
@@ -59,7 +77,11 @@ public class Camp  {
         this.initialLands = initialLands;
         this.baseUnitSprite = baseUnitSprite;
         this.PlayerName = PlayerName;
+        this.cardStartIndex = cardStartIndex;
+        this.cardEndIndex = cardEndIndex;
         ownedLands = new List<Land>();
+        CardEnum_FuncDic = new Dictionary<BattleCardFuncEnum, Func<Land, int>>();
+        BattleCardUIs = new List<BattleCardUI>();
     }
     #region 子类阵营需要重写的数值
     //该阵营军队进攻一次所需要的金币

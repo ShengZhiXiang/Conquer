@@ -73,7 +73,7 @@ public class ShowMapInfo : EditorWindow
                     hasCannon = tmb.Map[x, y].cannon.isOwned;
                     isInCool = tmb.Map[x, y].cannon.isInCool;
                     lastBomb = tmb.Map[x, y].cannon.lastFire;
-                    cardFunc = tmb.Map[x, y].BattleCard!=null? tmb.Map[x, y].BattleCard.funcEnum.ToString():"没有卡牌";
+                    cardFunc = tmb.Map[x, y].BattleCardUI!=null? "有卡牌":"没有卡牌";
                 }
 
             }

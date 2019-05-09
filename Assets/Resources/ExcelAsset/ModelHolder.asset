@@ -17,21 +17,29 @@ MonoBehaviour:
     tilePath: Tiles/campTiles/Blue
     baseUnitSpritePath: Sprite/BattleUnit/soldier/US_soldier
     campClassName: USA
+    cardStartIndex: 4001
+    cardEndIndex: 4001
   - campID: 1002
     campName: "\u5FB7\u56FD"
     tilePath: Tiles/campTiles/Red
     baseUnitSpritePath: Sprite/BattleUnit/soldier/Germany_soldier
     campClassName: GERMANY
+    cardStartIndex: 6001
+    cardEndIndex: 6001
   - campID: 1003
     campName: "\u65E5\u672C"
     tilePath: Tiles/campTiles/Green
     baseUnitSpritePath: Sprite/BattleUnit/soldier/japan_soldier
     campClassName: JAPAN
+    cardStartIndex: 7001
+    cardEndIndex: 7001
   - campID: 1004
     campName: "\u82CF\u8054"
     tilePath: Tiles/campTiles/Black
     baseUnitSpritePath: Sprite/BattleUnit/soldier/soviet_soldier
     campClassName: SOVIET
+    cardStartIndex: 5001
+    cardEndIndex: 5001
   terrainModels:
   - terrainID: 2001
     terrainName: "\u5C71\u5DDD"
@@ -100,8 +108,6 @@ MonoBehaviour:
   - cardID: 3001
     cardName: "\u7A7A\u88AD"
     spritePath: Sprite/Card/cardBG
-    isCampCard: 0
-    belongCampID: 0
     cardFuncEnum: AIR_RAID
     cardTriggerTime: IMMEDIATELY
     funcDescription: "\u4F7F\u4F60\u7684\u5BF9\u624B\u62BD\u4E24\u5F20\u724C"
@@ -111,8 +117,6 @@ MonoBehaviour:
   - cardID: 3002
     cardName: "\u52A0\u56FA\u9632\u5FA1"
     spritePath: Sprite/Card/cardBG
-    isCampCard: 0
-    belongCampID: 0
     cardFuncEnum: DEFENCE_ADD_POINT
     cardTriggerTime: DEFENCE_END_POINT
     funcDescription: "\u5728\u56DE\u5408\u7ED3\u675F\u524D\u83B7\u5F97\u4E00\u53EA\u654C\u65B9\u602A\u517D\u7684\u63A7\u5236\u6743"
@@ -122,8 +126,6 @@ MonoBehaviour:
   - cardID: 3003
     cardName: "\u5168\u6C11\u7686\u5175"
     spritePath: Sprite/Card/cardBG
-    isCampCard: 0
-    belongCampID: 0
     cardFuncEnum: DEFENCE_ADD_ROLL
     cardTriggerTime: DEFENCE_DICE_ROLL
     funcDescription: "\u6467\u6BC1\u5BF9\u65B9\u6240\u6709\u5DF2\u5E03\u7F6E\u5361\u724C"
@@ -133,8 +135,6 @@ MonoBehaviour:
   - cardID: 3004
     cardName: "\u5E03\u7F6E\u5730\u96F7"
     spritePath: Sprite/Card/cardBG
-    isCampCard: 0
-    belongCampID: 0
     cardFuncEnum: DEFENCE_LOSE_REDUCE_POPULATION
     cardTriggerTime: DEFENCE_LOSE
     funcDescription: "\u4F7F\u5BF9\u65B9\u4E00\u5F20\u6307\u5B9A\u7684\u5E03\u7F6E\u5361\u724C\u5931\u6548"
@@ -144,11 +144,45 @@ MonoBehaviour:
   - cardID: 3005
     cardName: "\u5F3A\u5F81"
     spritePath: Sprite/Card/cardBG
-    isCampCard: 0
-    belongCampID: 0
     cardFuncEnum: ATTACK_ADD_ROLL
     cardTriggerTime: ATTACK_DICE_ROLL
     funcDescription: "\u4ECE\u4F60\u7684\u5893\u5730\u53EC\u5524\u4E00\u53EA\u602A\u517D\u5230\u4F60\u7684\u573A\u4E0A"
     costGold: 3
     costPopulation: 1
+    isSelfCard: 1
+  - cardID: 4001
+    cardName: "\u539F\u5B50\u5F39"
+    spritePath: Sprite/Card/USACardBG
+    cardFuncEnum: ATOMIC_BOMB
+    cardTriggerTime: IMMEDIATELY
+    funcDescription: 
+    costGold: 6
+    costPopulation: 0
+    isSelfCard: 0
+  - cardID: 5001
+    cardName: "\u6218\u65F6\u5171\u4EA7"
+    spritePath: Sprite/Card/SovietCardBG
+    cardFuncEnum: COMMUNIST
+    cardTriggerTime: IMMEDIATELY
+    funcDescription: 
+    costGold: 8
+    costPopulation: 0
+    isSelfCard: 1
+  - cardID: 6001
+    cardName: "\u95EA\u7535\u6218"
+    spritePath: Sprite/Card/GermanyCardBG
+    cardFuncEnum: BLITZ
+    cardTriggerTime: IMMEDIATELY
+    funcDescription: 
+    costGold: 8
+    costPopulation: 0
+    isSelfCard: 1
+  - cardID: 7001
+    cardName: "\u519B\u56FD\u4E3B\u4E49"
+    spritePath: Sprite/Card/JapanCardBG
+    cardFuncEnum: MILITARISM
+    cardTriggerTime: IMMEDIATELY
+    funcDescription: 
+    costGold: 8
+    costPopulation: 0
     isSelfCard: 1

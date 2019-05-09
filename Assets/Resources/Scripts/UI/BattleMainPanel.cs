@@ -35,12 +35,14 @@ public class BattleMainPanel : UINode {
         
         _btnEndTurn.gameObject.SetActive(false);
         BattleManager.Instance.BATTLE_EVENT_FinishAttackOneLand += UpdateCurCampInfo;
-        BattleManager.Instance.BATTLE_EVENT_BattleStart += UpdateCurCampInfo;
+       // BattleManager.Instance.BATTLE_EVENT_BattleStart += UpdateCurCampInfo;
         BattleManager.Instance.BATTLE_EVENT_BattleStart += OnBattleStartPanelChange;
-        BattleManager.Instance.BATTLE_EVENT_EndTurn += UpdateCurCampInfo;
+       
         BattleManager.Instance.BATTLE_EVENT_ReSelectMap += UpdateCurCampInfo;
         BattleManager.Instance.BATTLE_EVENT_MyTurnStart += ShowCurLandInfoTip;
+        BattleManager.Instance.BATTLE_EVENT_MyTurnStart += UpdateCurCampInfo;
         BattleManager.Instance.BATTLE_EVENT_AITURNStart += HideCurLandInfoTip;
+        BattleManager.Instance.BATTLE_EVENT_AITURNStart += UpdateCurCampInfo;
         BattleManager.Instance.BATTLE_EVENT_BOMB_ANOTHER_LAND += UpdateCurCampInfo;
         BattleManager.Instance.BATTLE_EVENT_PURCHASE_CANNON += UpdateCurCampInfo;
         BattleManager.Instance.BATTLE_EVENT_USE_CARD += UpdateCurCampInfo;
@@ -95,7 +97,7 @@ public class BattleMainPanel : UINode {
     private void HideCurLandInfoTip()
     {
         _curLandInfo.SetActive(false);
-        _cardList.SetActive(false);
+        //_cardList.SetActive(false);
     }
 
     public void RefreshCurLandInfo(string content)

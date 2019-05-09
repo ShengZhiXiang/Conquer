@@ -20,6 +20,6 @@ public class Camp_UK : Camp {
         }
     }
 
-    public Camp_UK(int campID, string name, int initialLands, Tile tile, Sprite baseUnitSprite,string PlayerName)
-        : base(campID, name, initialLands, tile, baseUnitSprite, PlayerName) { }
+    public Camp_UK(int campID, string name, int initialLands, Tile tile, Sprite baseUnitSprite,string PlayerName, int cardStartIndex, int cardEndIndex)
+        : base(campID, name, initialLands, tile, baseUnitSprite, PlayerName, cardStartIndex, cardEndIndex) { }
 }

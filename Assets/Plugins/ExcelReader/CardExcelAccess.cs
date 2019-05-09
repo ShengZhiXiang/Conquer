@@ -18,14 +18,12 @@ public class CardExcelAccess : ExcelAccessBase<CardModel> {
                 cardID = int.Parse(collection[i][0].ToString()),
                 cardName = collection[i][1].ToString(),
                 spritePath = collection[i][2].ToString(),
-                isCampCard = int.Parse(collection[i][3].ToString()) == 1 ? true : false,
-                belongCampID = int.Parse(collection[i][4].ToString()),
-                cardFuncEnum = collection[i][5].ToString(),
-                funcDescription = collection[i][6].ToString(),
-                costGold = int.Parse(collection[i][7].ToString()),
-                costPopulation = int.Parse(collection[i][8].ToString()),
-                cardTriggerTime = collection[i][9].ToString(),
-                isSelfCard = int.Parse(collection[i][10].ToString()),
+                cardFuncEnum = collection[i][3].ToString(),
+                funcDescription = collection[i][4].ToString(),
+                costGold = int.Parse(collection[i][5].ToString()),
+                costPopulation = int.Parse(collection[i][6].ToString()),
+                cardTriggerTime = collection[i][7].ToString(),
+                isSelfCard = int.Parse(collection[i][8].ToString()),
             };
 
             result.Add(campModel);

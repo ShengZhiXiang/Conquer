@@ -5,8 +5,11 @@ using UnityEngine.Tilemaps;
 
 public class Camp_Japan : Camp {
 
-    public Camp_Japan(int campID, string name, int initialLands, Tile tile, Sprite baseUnitSprite,string PlayerName)
-        : base(campID, name, initialLands, tile, baseUnitSprite, PlayerName) { }
+    public Camp_Japan(int campID, string name, int initialLands, Tile tile, Sprite baseUnitSprite,string PlayerName,int cardStartIndex, int cardEndIndex)
+        : base(campID, name, initialLands, tile, baseUnitSprite, PlayerName, cardStartIndex, cardEndIndex)
+    {
+        CardEnum_FuncDic.Add(BattleCardFuncEnum.MILITARISM, Militarism);
+    }
 
     public override int GetExtraDiceRollsAttackByLand(Land land, bool isAttack)
     {
@@ -31,5 +34,12 @@ public class Camp_Japan : Camp {
         }
 
         return result;
+    }
+
+    private int Militarism(Land land)
+    {
+        BattleManager.Instance.CurCamp.hasCardBuff = true;
+        BattleManager.Instance.CurCamp.CampBuffCardEffect.ExtraSupplyUnit += 1;
+        return 0;
     }
 }

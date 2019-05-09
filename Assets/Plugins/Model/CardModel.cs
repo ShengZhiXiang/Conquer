@@ -7,8 +7,6 @@ public struct CardModel  {
     public int cardID;
     public string cardName;
     public string spritePath;
-    public bool isCampCard;
-    public int belongCampID;
     public string cardFuncEnum;
     public string cardTriggerTime;
     public string funcDescription;

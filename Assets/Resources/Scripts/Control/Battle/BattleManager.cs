@@ -178,7 +178,7 @@ public class BattleManager : Singleton<BattleManager> {
     /// </summary>
     public Action BATTLE_EVENT_AITURNStart;
     /// <summary>
-    /// 回合结束的回调
+    /// 每一个回合结束的回调
     /// </summary>
     public Action BATTLE_EVENT_EndTurn;
 
@@ -279,19 +279,19 @@ public class BattleManager : Singleton<BattleManager> {
         switch (campClassName)
         {
             case CAMP_NAME.GERMANY:
-                result = new Camp_Germany(campModel.campID, campModel.campName, landCount, campTile, baseUnitSprite, playerName);
+                result = new Camp_Germany(campModel.campID, campModel.campName, landCount, campTile, baseUnitSprite, playerName,campModel.cardStartIndex,campModel.cardEndIndex);
                 break;
             case CAMP_NAME.USA:
-                result = new Camp_USA(campModel.campID, campModel.campName, landCount, campTile, baseUnitSprite, playerName);
+                result = new Camp_USA(campModel.campID, campModel.campName, landCount, campTile, baseUnitSprite, playerName, campModel.cardStartIndex, campModel.cardEndIndex);
                 break;
             case CAMP_NAME.JAPAN:
-                result = new Camp_Japan(campModel.campID, campModel.campName, landCount, campTile, baseUnitSprite, playerName);
+                result = new Camp_Japan(campModel.campID, campModel.campName, landCount, campTile, baseUnitSprite, playerName, campModel.cardStartIndex, campModel.cardEndIndex);
                 break;
             case CAMP_NAME.SOVIET:
-                result = new Camp_Soviet(campModel.campID, campModel.campName, landCount, campTile, baseUnitSprite, playerName);
+                result = new Camp_Soviet(campModel.campID, campModel.campName, landCount, campTile, baseUnitSprite, playerName, campModel.cardStartIndex, campModel.cardEndIndex);
                 break;
             default:
-                result = new Camp(campModel.campID, campModel.campName, landCount, campTile, baseUnitSprite, playerName);
+                result = new Camp(campModel.campID, campModel.campName, landCount, campTile, baseUnitSprite, playerName, campModel.cardStartIndex, campModel.cardEndIndex);
                 break;
         }
         return result; 
@@ -359,6 +359,11 @@ public class BattleManager : Singleton<BattleManager> {
         //卡牌分配
         //todo
         Debug.Log("我的回合开始惹！");
+        //设置卡牌可点击
+        foreach (BattleCardUI battleCardUI in CurCamp.BattleCardUIs)
+        {
+            battleCardUI.SetCanClick(true);
+        }
         GlobalUImanager.Instance.OpenPopTip().GetComponent<PopTip>().SetContent(CurCamp.PlayerName+"的回合!");
     }
     #endregion
@@ -522,6 +527,14 @@ public class BattleManager : Singleton<BattleManager> {
 
         float time = CurCamp.ownedLands[0].BattleBaseUnitSupplyTip.GetAnimationTime();
         yield return new WaitForSeconds(time);
+
+        if (BATTLE_EVENT_EndTurn != null)
+        {
+            BATTLE_EVENT_EndTurn();
+        }
+        //****************分界线*********************//
+        //下一个回合开始
+
         //当前回合数+1
         CurNumOfRounds++;
 
@@ -546,14 +559,18 @@ public class BattleManager : Singleton<BattleManager> {
         //    CurBattleState.EnterState();
         //}
 
-        if (BATTLE_EVENT_EndTurn != null)
-        {
-            BATTLE_EVENT_EndTurn();
-        }
+      
     }
 
     private void   OnTurnEnd()
     {
+        
+        foreach (BattleCardUI battleCardUI in CurCamp.BattleCardUIs)
+        {
+            //取消卡牌可点击状态
+            battleCardUI.SetCanClick(false);
+            battleCardUI.BackToNormal();
+        }
 
         //补给当前阵营各地块
         foreach (Land land in CurCamp.ownedLands)
@@ -574,18 +591,21 @@ public class BattleManager : Singleton<BattleManager> {
                 land.cannon.isInCool = !((CurNumOfRounds - cannon.lastFire) >= CampDic.Count);
             }
             //进攻效果的卡牌都去掉
-            if (land.BattleCard!=null)
+            if (land.BattleCardUI!=null)
             {
-                BattleCardTriggerTime landCardTrigger = land.BattleCard.triggerTime;
+                BattleCardTriggerTime landCardTrigger = land.BattleCardUI.triggerTime;
                 if (landCardTrigger.Equals(BattleCardTriggerTime.ATTACK_DICE_ROLL)|| landCardTrigger.Equals(BattleCardTriggerTime.ATTACK_DICE_ROLL))
                 {
-                    land.BattleCard = null;
+                    land.BattleCardUI = null;
                        
                 }
             }
         }
         //当前阵营的卡牌buff取消
         CurCamp.ResetCardEffect();
+        //所有地块取消高亮
+        SetCampLandsHighLight(false,false);
+        SetCampLandsHighLight(true,false);
         SupplyCard();
 
 
@@ -620,10 +640,7 @@ public class BattleManager : Singleton<BattleManager> {
     /// </summary>
     public void SupplyCard()
     {    
-        if (CurCamp == MyCamp)
-        {
-            BattleCardManager.Instance.SupplyCard();
-        }
+            BattleCardManager.Instance.SupplyCard();       
     }
 
     /// <summary>

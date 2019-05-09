@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Tilemaps;
@@ -13,8 +14,20 @@ public class Camp_USA : Camp {
         }
     }
 
-    public Camp_USA(int campID, string name, int initialLands, Tile tile, Sprite baseUnitSprite,string PlayerName)
-        : base(campID,name,initialLands,tile,baseUnitSprite, PlayerName) { }
+    public Camp_USA(int campID, string name, int initialLands, Tile tile, Sprite baseUnitSprite, string PlayerName,int cardStartIndex,int cardEndIndex)
+        : base(campID, name, initialLands, tile, baseUnitSprite, PlayerName, cardStartIndex, cardEndIndex)
+    {
+        CardEnum_FuncDic.Add(BattleCardFuncEnum.ATOMIC_BOMB,AtomicBomb);
+    }
 
+
+    
+    private int AtomicBomb(Land land)
+    {
+
+        land.BattleUnit = 0;
+        land.leftPopulation = 0;
+        return 0;
+    }
 
 }

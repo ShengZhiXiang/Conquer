@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
@@ -15,22 +16,46 @@ public class BattleCardUI : UINode {
 
     public int cardId;
     public int arrayIndex;
-
-    public void InitCardInfo(BattleCard battleCard ,int arrayIndex)
+    public bool isSelfCard;
+    public BattleCardTriggerTime triggerTime;
+    public Func<Land, int> CardFunc;
+    public void InitCardInfo(int cardId,Sprite sprite,string goldCost,string cardName,bool isSelfCard, int arrayIndex,BattleCardTriggerTime triggerTime, Func<Land,int> CardFunc)
     {
-        this.cardId = battleCard.ID;
-        BG.sprite = battleCard.sprite;
-        this.goldCost.text = battleCard.goldCost.ToString();
-        this.cardName.text = battleCard.cardName;
+        this.cardId = cardId;
+        BG.sprite = sprite;
+        this.goldCost.text = goldCost;
+        this.cardName.text = cardName;
+        this.isSelfCard = isSelfCard;
         this.arrayIndex = arrayIndex;
+        this.CardFunc = CardFunc;
+        this.triggerTime = triggerTime;
+    }
+    public void InitCardInfo(CardModel cardModel,int arrayIndex,Func<Land,int> CardFunc)
+    {
+        this.cardId = cardModel.cardID;
+        BG.sprite = Resources.Load<Sprite>(cardModel.spritePath);
+        goldCost.text = cardModel.costGold.ToString();
+        cardName.text = cardModel.cardName;
+        isSelfCard = cardModel.isSelfCard == 1;
+        this.arrayIndex = arrayIndex;
+        triggerTime = (BattleCardTriggerTime)Enum.Parse(typeof(BattleCardTriggerTime), cardModel.cardTriggerTime);
+        this.CardFunc = CardFunc;
     }
 
+    private bool canClick ;
+    public void SetCanClick(bool canClick)
+    {
+        this.canClick = canClick;
+    }
     public override void Initial()
     {
         base.Initial();
         UGUIEventListener.Get(gameObject).onClick = delegate() 
         {
-            BattleCardManager.Instance.OnClickCard(arrayIndex);
+            if (canClick)
+            {
+                BattleCardManager.Instance.OnClickCard(arrayIndex);
+            }          
         };
 
         UGUIEventListener.Get(gameObject).onEnter = delegate ()

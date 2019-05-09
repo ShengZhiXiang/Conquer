@@ -9,5 +9,6 @@ public struct CampModel  {
     public string tilePath;
     public string baseUnitSpritePath;
     public string campClassName;
-
+    public int cardStartIndex;
+    public int cardEndIndex;
 }

@@ -11,13 +11,13 @@ public class CardAttackState : AttackStateBase {
         base.ClickAction(clickLand);
 
         //如果这块地上有牌了，就直接返回
-        if (clickLand.BattleCard!=null)
+        if (clickLand.BattleCardUI!=null)
         {
             MyRound.CurAttackState = MyRound.AttackStateDic[AttackStateEnum.NoneAttack];
             Debug.Log("这块地上只能有一张牌");
             return;
         }
-        BattleCard CurCard =  BattleCardManager.Instance.GetCurBattleCard();
+        BattleCardUI CurCard =  BattleCardManager.Instance.CurSelectCard;
         bool curLandIsMyCampLand = clickLand.CampID == BattleManager.Instance.CurCamp.campID;
         //如果卡牌放的位置是对的，并且剩余资源足够使用卡牌则放牌，否则跳过
         if (CurCard != null && !(CurCard.isSelfCard ^ curLandIsMyCampLand) && clickLand.UseCardConsume(CurCard))
@@ -28,7 +28,7 @@ public class CardAttackState : AttackStateBase {
             }
             else
             {
-                clickLand.BattleCard = CurCard;
+                clickLand.BattleCardUI = CurCard;
             }
             BattleCardManager.Instance.DestroyCard();
             Debug.Log("使用成功");

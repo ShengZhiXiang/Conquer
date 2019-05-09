@@ -22,7 +22,9 @@ public  class CampExcelAccess : ExcelAccessBase<CampModel> {
                 campName = collection[i][1].ToString(),
                 tilePath = collection[i][2].ToString(),
                 baseUnitSpritePath = collection[i][3].ToString(),
-                campClassName = collection[i][4].ToString()
+                campClassName = collection[i][4].ToString(),
+                cardStartIndex = int.Parse(collection[i][5].ToString()),
+                cardEndIndex = int.Parse(collection[i][6].ToString())
             };
 
             result.Add(campModel);

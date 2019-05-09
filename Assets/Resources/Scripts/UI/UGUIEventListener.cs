@@ -36,8 +36,7 @@ public class UGUIEventListener : EventTrigger
     }
 
     static public UGUIEventListener Get(GameObject go)
-    {
-       
+    {    
         if (go.GetComponent<UGUIEventListener>()==null)
         {
             go.AddComponent<UGUIEventListener>();

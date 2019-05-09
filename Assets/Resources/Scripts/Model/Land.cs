@@ -38,11 +38,11 @@ public class Land  {
         set { _curTerrain = value; }
     }
     //当前的卡牌
-    private BattleCard _battleCard;
-    public BattleCard BattleCard
+    private BattleCardUI _battleCardUI;
+    public BattleCardUI BattleCardUI
     {
-        get { return _battleCard; }
-        set { _battleCard = value; }
+        get { return _battleCardUI; }
+        set { _battleCardUI = value; }
     }
     
     //有几个战斗单位
@@ -219,12 +219,14 @@ public class Land  {
 
     public void EndTurnSupply()
     {
+        Camp curCamp = BattleManager.Instance.CurCamp;
         //金币补给
-        BattleManager.Instance.CurCamp.AddCampGold(increaseGold)  ;
+        curCamp.AddCampGold(increaseGold)  ;
         //人口补给
         leftPopulation += increasePopulation;
-        //随机给兵,每回合随机补0~3个兵
-        int randomSupplyUnit = UnityEngine.Random.Range(0, 4);
+        //随机给兵,每回合随机补0~3个兵,有卡牌buff加持
+        int extraSupplyUnit = curCamp.hasCardBuff ? curCamp.CampBuffCardEffect.ExtraSupplyUnit : 0;
+        int randomSupplyUnit = UnityEngine.Random.Range(0, 3) + extraSupplyUnit;
         //如果该地的剩余人口大于随机数，那么补随机数的兵，并扣除对应剩余人口
         if (leftPopulation >= randomSupplyUnit)
         {
@@ -270,12 +272,12 @@ public class Land  {
     /// <returns></returns>
     public int GetExtraIncreaseByCard(BattleCardTriggerTime triggerTime)
     {
-        if (BattleCard==null||BattleCard.triggerTime!=triggerTime)
+        if (BattleCardUI == null|| BattleCardUI.triggerTime!=triggerTime)
         {
             return 0;
         }
-        int result  = BattleCard.CardFunc(this);
-        BattleCard = null;
+        int result  = BattleCardUI.CardFunc(this);
+        BattleCardUI = null;
         return result;
     }
 
@@ -286,22 +288,23 @@ public class Land  {
     /// <param name="triggerTime"></param>
     public void AfterFightCardEffect(BattleCardTriggerTime triggerTime)
     {
-        if (BattleCard == null || BattleCard.triggerTime != triggerTime)
+        if (BattleCardUI == null || BattleCardUI.triggerTime != triggerTime)
         {
             return ;
         }
 
-        BattleCard.CardFunc(this);
-        BattleCard = null;
+        BattleCardUI.CardFunc(this);
+        BattleCardUI = null;
     }
 
-    public bool UseCardConsume(BattleCard battleCard)
+    public bool UseCardConsume(BattleCardUI battleCardUI)
     {
-
-        if (battleCard.goldCost <= BattleManager.Instance.CurCamp.OwnGold && leftPopulation >= battleCard.populationCost)
+        int goldCost = GameDataSet.Instance.CardModelDic[battleCardUI.cardId].costGold;
+        int populationCost = GameDataSet.Instance.CardModelDic[battleCardUI.cardId].costPopulation;
+        if (goldCost <= BattleManager.Instance.CurCamp.OwnGold && leftPopulation >= populationCost)
         {
-            BattleManager.Instance.CurCamp.ReduceCampGold(battleCard.goldCost);
-            leftPopulation -= battleCard.populationCost;
+            BattleManager.Instance.CurCamp.ReduceCampGold(goldCost);
+            leftPopulation -= populationCost;
             if (BattleManager.Instance.BATTLE_EVENT_USE_CARD!=null)
             {
                 BattleManager.Instance.BATTLE_EVENT_USE_CARD();

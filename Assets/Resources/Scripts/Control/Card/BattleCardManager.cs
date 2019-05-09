@@ -15,6 +15,10 @@ public enum BattleCardFuncEnum
     ATTACK_CONSUME_REDUCE,
     ATTACK_CAMP_EXTRA_POINT,
     NATIONALISM,
+    ATOMIC_BOMB,
+    COMMUNIST,
+    BLITZ,
+    MILITARISM,
 }
 
 public enum BattleCardTriggerTime
@@ -26,6 +30,7 @@ public enum BattleCardTriggerTime
     ATTACK_END_POINT,
     DEFENCE_LOSE,
     ATTACK_LOSE,
+   
 }
 
 public class BattleCardManager : Singleton<BattleCardManager> {
@@ -35,59 +40,38 @@ public class BattleCardManager : Singleton<BattleCardManager> {
         get { return _curSelectCard;}
         set { _curSelectCard = value;}
     }
-
-    private List<BattleCardUI> _battleCardUIs;
-    public List<BattleCardUI> BattleCardUIs
-    {
-        get { return _battleCardUIs; }
-        set { _battleCardUIs = value; }
-    }
-    public Dictionary<int, BattleCard> battleCardDic;
-    public Dictionary<BattleCardFuncEnum, Func<Land, int>> CardEnum_FuncDIc;
+    public static readonly int BasicCardStartIndex = 3001;
+    public static readonly int BasicCardEndIndex = 3005;
+    public Dictionary<BattleCardFuncEnum, Func<Land, int>> CardEnum_FuncDic; 
     public void Inital()
     {
-        CardEnum_FuncDIc = new Dictionary<BattleCardFuncEnum, Func<Land, int>>();
-        CardEnum_FuncDIc.Add(BattleCardFuncEnum.AIR_RAID, AirRaid);
-        CardEnum_FuncDIc.Add(BattleCardFuncEnum.DEFENCE_ADD_ROLL, DefenceAddRoll);
-        CardEnum_FuncDIc.Add(BattleCardFuncEnum.DEFENCE_ADD_POINT, DefenceAddPoint);
-        CardEnum_FuncDIc.Add(BattleCardFuncEnum.ATTACK_ADD_ROLL, AttackAddRoll);
-        CardEnum_FuncDIc.Add(BattleCardFuncEnum.DEFENCE_LOSE_REDUCE_POPULATION, DefenceLoseReducePopulation);
-        //CardEnum_FuncDIc.Add(BattleCardFuncEnum.ATTACK_LOSE_ADD_GOLD, AttackLoseAddGold);
-        //CardEnum_FuncDIc.Add(BattleCardFuncEnum.ATTACK_CONSUME_REDUCE,AttackConsumeReduce);
-        //CardEnum_FuncDIc.Add(BattleCardFuncEnum.ATTACK_CAMP_EXTRA_POINT ,AttackFinalExtraPoint);
-        //CardEnum_FuncDIc.Add(BattleCardFuncEnum.NATIONALISM,NationNalism);
-        InitBattleCardDic();
+        CardEnum_FuncDic = new Dictionary<BattleCardFuncEnum, Func<Land, int>>();
+        CardEnum_FuncDic.Add(BattleCardFuncEnum.AIR_RAID, AirRaid);
+        CardEnum_FuncDic.Add(BattleCardFuncEnum.DEFENCE_ADD_ROLL, DefenceAddRoll);
+        CardEnum_FuncDic.Add(BattleCardFuncEnum.DEFENCE_ADD_POINT, DefenceAddPoint);
+        CardEnum_FuncDic.Add(BattleCardFuncEnum.ATTACK_ADD_ROLL, AttackAddRoll);
+        CardEnum_FuncDic.Add(BattleCardFuncEnum.DEFENCE_LOSE_REDUCE_POPULATION, DefenceLoseReducePopulation);
+
+        RegisteEvent();
     }
 
-    private void InitBattleCardDic()
+    private void RegisteEvent()
     {
-          battleCardDic = new Dictionary<int, BattleCard>();
-          BattleCardUIs = new List<BattleCardUI>();
-
-        Sprite sprite;
-        foreach (CardModel cardModel in GameDataSet.Instance.CardModelDic.Values)
-        {
-            BattleCardFuncEnum funcEnum = (BattleCardFuncEnum)Enum.Parse(typeof(BattleCardFuncEnum), cardModel.cardFuncEnum);
-            bool isSelfCard = cardModel.isSelfCard == 1 ? true : false;
-            BattleCardTriggerTime triggerTime = (BattleCardTriggerTime)Enum.Parse(typeof(BattleCardTriggerTime), cardModel.cardTriggerTime);
-            sprite = Resources.Load<Sprite>(cardModel.spritePath);
-            BattleCard battleCard = new BattleCard(cardModel.cardID,cardModel.cardName,sprite,funcEnum, triggerTime, isSelfCard, cardModel.costGold, cardModel.costPopulation);
-            battleCard.CardFunc = CardEnum_FuncDIc[battleCard.funcEnum];
-            battleCardDic.Add(battleCard.ID, battleCard);
-        }
-
-        //CurSelectCard = battleCardDic[3005];
-
+        BattleManager.Instance.BATTLE_EVENT_EndTurn += HideBattleCards;
+        BattleManager.Instance.BATTLE_EVENT_MyTurnStart += ShowBattleCards;
+        BattleManager.Instance.BATTLE_EVENT_AITURNStart += ShowBattleCards;
     }
+
+
+    
     #region 卡牌操作函数
     public void OnClickCard(int arrayIndex)
     {
+        List<BattleCardUI> CurCampCards = BattleManager.Instance.CurCamp.BattleCardUIs;
         //如果当前没有选中的卡牌，则设置一下当前选中的卡牌
         if (CurSelectCard == null)
-        {             
-            BattleCardUIs[arrayIndex].PopSelf();
-            CurSelectCard = BattleCardUIs[arrayIndex];
-            BattleManager.Instance.SetCampLandsHighLight(battleCardDic[CurSelectCard.cardId].isSelfCard);
+        {
+            OnSelectCard(arrayIndex);
         }
         //否则如果点的是同一张卡牌，则视为取消选中
         else if (CurSelectCard.arrayIndex == arrayIndex)
@@ -97,26 +81,31 @@ public class BattleCardManager : Singleton<BattleCardManager> {
         //点的是另一张卡牌
         else
         {
-            BattleCardUIs[CurSelectCard.arrayIndex].BackToNormal();
-            BattleCardUIs[arrayIndex].PopSelf();
-            CurSelectCard = BattleCardUIs[arrayIndex];    
-            BattleManager.Instance.SetCampLandsHighLight(battleCardDic[CurSelectCard.cardId].isSelfCard);
+            CancelSelectCard();
+            OnSelectCard(arrayIndex);      
         }
         BattleManager.Instance.OnClickCard();
         
 
     }
+    public void OnSelectCard(int arrayIndex)
+    {
+        List<BattleCardUI> CurCampCards = BattleManager.Instance.CurCamp.BattleCardUIs;
+        CurCampCards[arrayIndex].PopSelf();
+        CurSelectCard = CurCampCards[arrayIndex];
+        BattleManager.Instance.SetCampLandsHighLight(CurSelectCard.isSelfCard);
+    }
 
     public void CancelSelectCard()
     {
+        List<BattleCardUI> CurCampCards = BattleManager.Instance.CurCamp.BattleCardUIs;
         if (CurSelectCard==null)
         {
             return;
         }
-        BattleCardUIs[CurSelectCard.arrayIndex].BackToNormal();
-        bool isMycampCard = battleCardDic[CurSelectCard.cardId].isSelfCard;
-        CurSelectCard = null;
-        BattleManager.Instance.SetCampLandsHighLight(isMycampCard, false);
+        CurCampCards[CurSelectCard.arrayIndex].BackToNormal();
+        BattleManager.Instance.SetCampLandsHighLight(CurSelectCard.isSelfCard, false);
+        CurSelectCard = null; 
     }
     public void OnMouseEnterCard(int cardID)
     {
@@ -130,37 +119,82 @@ public class BattleCardManager : Singleton<BattleCardManager> {
     #endregion
     public void SupplyCard()
     {
-        if (BattleCardUIs.Count<6)
+        List<BattleCardUI> CurCampCards = BattleManager.Instance.CurCamp.BattleCardUIs;
+        if (CurCampCards.Count<6)
         {
-            GameObject temp = Resources.Load<GameObject>("Prefabs/UI/BattleCard");
-            GameObject cardListNode = GlobalUImanager.Instance.OpenUI(UIEnum.BattleMainPanel).GetComponent<BattleMainPanel>()._cardList;
-            GameObject card = Instantiate(temp, cardListNode.transform);
-            BattleCardUI battleCardUI = card.GetComponent<BattleCardUI>();
-            int index = UnityEngine.Random.Range(3001, 3006);
-            BattleCard battleCard = battleCardDic[index];
-            int arrayIndex = BattleCardUIs.Count;
-            battleCardUI.InitCardInfo(battleCard,arrayIndex);
-            BattleCardUIs.Add( battleCardUI);
+            BattleCardUI battleCardUI = InstantiateBattleCardUI();
+            bool supplyCampCard = UnityEngine.Random.value > 0.5f;
+            int arrayIndex = CurCampCards.Count;
+            if (supplyCampCard)
+            {
+                //补给阵营专属牌
+                Camp curCamp = BattleManager.Instance.CurCamp;          
+                int startIndex = curCamp.cardStartIndex;
+                int endindex = curCamp.cardEndIndex;    
+                CardModel cardModel = GetRandomCardModelByIndex(startIndex, endindex);             
+                BattleCardFuncEnum funcEnum = (BattleCardFuncEnum)Enum.Parse(typeof(BattleCardFuncEnum), cardModel.cardFuncEnum);
+                battleCardUI.InitCardInfo(cardModel, arrayIndex, curCamp.CardEnum_FuncDic[funcEnum]);
+            }
+            else
+            {
+                //补给基础牌
+                CardModel cardModel = GetRandomCardModelByIndex(BasicCardStartIndex, BasicCardEndIndex);
+                BattleCardFuncEnum funcEnum = (BattleCardFuncEnum)Enum.Parse(typeof(BattleCardFuncEnum), cardModel.cardFuncEnum);
+                battleCardUI.InitCardInfo(cardModel, arrayIndex, CardEnum_FuncDic[funcEnum]);
+            }                    
+            CurCampCards.Add(battleCardUI);           
         }
     }
+    private BattleCardUI InstantiateBattleCardUI()
+    {
+        GameObject temp = Resources.Load<GameObject>("Prefabs/UI/BattleCard");
+        GameObject cardListNode = GlobalUImanager.Instance.OpenUI(UIEnum.BattleMainPanel).GetComponent<BattleMainPanel>()._cardList;
+        GameObject card = Instantiate(temp, cardListNode.transform);
+        return card.GetComponent<BattleCardUI>();
+    } 
+    private CardModel GetRandomCardModelByIndex(int cardStartIndex,int cardEndIndex)
+    {
+        int cardId = UnityEngine.Random.Range(cardStartIndex, cardEndIndex + 1);
+        CardModel cardModel = GameDataSet.Instance.CardModelDic[cardId];
+        return cardModel;
+    }
+
     public void DestroyCard()
-    {  
-        Destroy(BattleCardUIs[CurSelectCard.arrayIndex].gameObject);
-        BattleCardUIs.Remove(CurSelectCard);
+    {
+        List<BattleCardUI> CurCampCards = BattleManager.Instance.CurCamp.BattleCardUIs;
+        Destroy(CurCampCards[CurSelectCard.arrayIndex].gameObject);
+        CurCampCards.Remove(CurSelectCard);
         //重新赋值下顺序
-        for (int i = 0 ; i < BattleCardUIs.Count ; i++)
+        for (int i = 0 ; i < CurCampCards.Count ; i++)
         {
-            BattleCardUIs[i].arrayIndex = i ;
+            CurCampCards[i].arrayIndex = i ;
         }
-        bool isMycampCard = battleCardDic[CurSelectCard.cardId].isSelfCard;
+        bool isMycampCard = CurSelectCard.isSelfCard;
         CurSelectCard = null;
         BattleManager.Instance.SetCampLandsHighLight(isMycampCard, false);
     }
-    public BattleCard GetCurBattleCard()
+
+    private void HideBattleCards()
     {
-        return battleCardDic[CurSelectCard.cardId];
+        List<BattleCardUI> CurCampCards = BattleManager.Instance.CurCamp.BattleCardUIs;
+        foreach (BattleCardUI battleCardUI in CurCampCards)
+        {
+            battleCardUI.gameObject.SetActive(false);
+        } 
     }
 
+    private void ShowBattleCards()
+    {
+        List<BattleCardUI> CurCampCards = BattleManager.Instance.CurCamp.BattleCardUIs;
+        Debug.Log(BattleManager.Instance.CurCamp.ToString());
+        Debug.Log(BattleManager.Instance.CurCamp.BattleCardUIs.Count.ToString());
+        foreach (BattleCardUI battleCardUI in CurCampCards)
+        {
+            battleCardUI.gameObject.SetActive(true);
+        }
+    }
+
+    #region 卡牌方法函数
     private int AirRaid(Land land)
     {
         land.BattleUnit = 1;
@@ -220,5 +254,6 @@ public class BattleCardManager : Singleton<BattleCardManager> {
         };
         return 0;
     }
+    #endregion
 
 }
