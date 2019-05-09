@@ -21,12 +21,16 @@ public class LandHighLightSide : MonoBehaviour {
         {
             GlobalUImanager.Instance.SingleLandHighLight = gameObject;
         }
-       
+
         if (highLightType == HighLightType.Single)
         {
             //把上一个先隐藏掉
             GlobalUImanager.Instance.SingleLandHighLight.SetActive(false);
             GlobalUImanager.Instance.SingleLandHighLight = gameObject;
+        }
+        else
+        {
+            GlobalUImanager.Instance.SingleLandHighLight = null;
         }
         gameObject.SetActive(show);
         //适应屏幕宽高，使一个图片正好占地图一个单元格大小

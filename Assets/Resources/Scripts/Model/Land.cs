@@ -38,11 +38,11 @@ public class Land  {
         set { _curTerrain = value; }
     }
     //当前的卡牌
-    private BattleCardUI _battleCardUI;
-    public BattleCardUI BattleCardUI
+    private BattleCard _battleCard;
+    public BattleCard BattleCard
     {
-        get { return _battleCardUI; }
-        set { _battleCardUI = value; }
+        get { return _battleCard; }
+        set { _battleCard = value; }
     }
     
     //有几个战斗单位
@@ -272,12 +272,12 @@ public class Land  {
     /// <returns></returns>
     public int GetExtraIncreaseByCard(BattleCardTriggerTime triggerTime)
     {
-        if (BattleCardUI == null|| BattleCardUI.triggerTime!=triggerTime)
+        if (BattleCard == null|| BattleCard.triggerTime!=triggerTime)
         {
             return 0;
         }
-        int result  = BattleCardUI.CardFunc(this);
-        BattleCardUI = null;
+        int result  = BattleCard.CardFunc(this);
+        BattleCard = null;
         return result;
     }
 
@@ -288,13 +288,13 @@ public class Land  {
     /// <param name="triggerTime"></param>
     public void AfterFightCardEffect(BattleCardTriggerTime triggerTime)
     {
-        if (BattleCardUI == null || BattleCardUI.triggerTime != triggerTime)
+        if (BattleCard == null || BattleCard.triggerTime != triggerTime)
         {
             return ;
         }
 
-        BattleCardUI.CardFunc(this);
-        BattleCardUI = null;
+        BattleCard.CardFunc(this);
+        BattleCard = null;
     }
 
     public bool UseCardConsume(BattleCardUI battleCardUI)

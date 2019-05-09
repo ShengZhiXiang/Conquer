@@ -11,7 +11,7 @@ public class CardAttackState : AttackStateBase {
         base.ClickAction(clickLand);
 
         //如果这块地上有牌了，就直接返回
-        if (clickLand.BattleCardUI!=null)
+        if (clickLand.BattleCard != null)
         {
             MyRound.CurAttackState = MyRound.AttackStateDic[AttackStateEnum.NoneAttack];
             Debug.Log("这块地上只能有一张牌");
@@ -28,10 +28,11 @@ public class CardAttackState : AttackStateBase {
             }
             else
             {
-                clickLand.BattleCardUI = CurCard;
+                clickLand.BattleCard = new BattleCard(CurCard.triggerTime,CurCard.CardFunc); 
             }
             BattleCardManager.Instance.DestroyCard();
             Debug.Log("使用成功");
+            
         }
         else
         {
@@ -46,7 +47,11 @@ public class CardAttackState : AttackStateBase {
     public override void OnClickCard()
     {
         base.OnClickCard();
-        MyRound.CurAttackState = MyRound.AttackStateDic[AttackStateEnum.NoneAttack];
+        if (BattleCardManager.Instance.CurSelectCard == null)
+        {
+            MyRound.CurAttackState = MyRound.AttackStateDic[AttackStateEnum.NoneAttack];
+        }
+        
     }
     public override void UpdateFunc()
     {

@@ -162,7 +162,7 @@ public class BattleCardManager : Singleton<BattleCardManager> {
     public void DestroyCard()
     {
         List<BattleCardUI> CurCampCards = BattleManager.Instance.CurCamp.BattleCardUIs;
-        Destroy(CurCampCards[CurSelectCard.arrayIndex].gameObject);
+        Destroy(CurSelectCard.gameObject);
         CurCampCards.Remove(CurSelectCard);
         //重新赋值下顺序
         for (int i = 0 ; i < CurCampCards.Count ; i++)
@@ -171,6 +171,7 @@ public class BattleCardManager : Singleton<BattleCardManager> {
         }
         bool isMycampCard = CurSelectCard.isSelfCard;
         CurSelectCard = null;
+
         BattleManager.Instance.SetCampLandsHighLight(isMycampCard, false);
     }
 

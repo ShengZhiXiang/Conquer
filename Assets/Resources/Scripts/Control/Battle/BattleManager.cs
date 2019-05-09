@@ -559,7 +559,7 @@ public class BattleManager : Singleton<BattleManager> {
         //    CurBattleState.EnterState();
         //}
 
-      
+
     }
 
     private void   OnTurnEnd()
@@ -591,12 +591,13 @@ public class BattleManager : Singleton<BattleManager> {
                 land.cannon.isInCool = !((CurNumOfRounds - cannon.lastFire) >= CampDic.Count);
             }
             //进攻效果的卡牌都去掉
-            if (land.BattleCardUI!=null)
+            if (land.BattleCard != null)
             {
-                BattleCardTriggerTime landCardTrigger = land.BattleCardUI.triggerTime;
-                if (landCardTrigger.Equals(BattleCardTriggerTime.ATTACK_DICE_ROLL)|| landCardTrigger.Equals(BattleCardTriggerTime.ATTACK_DICE_ROLL))
+                BattleCardTriggerTime landCardTrigger = land.BattleCard.triggerTime;
+                if (landCardTrigger.Equals(BattleCardTriggerTime.ATTACK_DICE_ROLL)|| landCardTrigger.Equals(BattleCardTriggerTime.ATTACK_END_POINT)
+                    || landCardTrigger.Equals(BattleCardTriggerTime.ATTACK_LOSE))
                 {
-                    land.BattleCardUI = null;
+                    land.BattleCard = null;
                        
                 }
             }
@@ -651,7 +652,6 @@ public class BattleManager : Singleton<BattleManager> {
     /// <param name="myCampHighLight"></param>
     public void SetCampLandsHighLight(bool myCampHighLight, bool isShow = true)
     {
-        GlobalUImanager.Instance.SingleLandHighLight = null;
         if (myCampHighLight)
         {
             foreach (Land land in CurCamp.ownedLands)
