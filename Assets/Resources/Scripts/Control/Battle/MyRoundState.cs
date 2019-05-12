@@ -107,7 +107,7 @@ public class MyRoundState : BattleStateBase {
         Cancel();
     }
 
-    private  void Cancel()
+    public   void Cancel()
     {
         CurAttackState.HideLandOpearteMenu();
         CurAttackState.CancelHighlight();

@@ -10,7 +10,7 @@ public class BombAttackState : AttackStateBase {
         if (BattleManager.Instance.IsTwoLandNeighbor(clickLand.CoordinateInMap, attackLand.CoordinateInMap) &&
             clickLand.CampID != attackLand.CampID)
         {
-            if (BattleManager.Instance.CurCamp.CannonAttack())
+            if (BattleManager.Instance.CurCamp.CanCannonAttack())
             {
                 BattleManager.Instance.BombAnotherLand(attackLand, clickLand);
             }

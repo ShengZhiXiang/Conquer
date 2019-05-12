@@ -7,12 +7,12 @@ using UnityEngine;
 public class BattleCard
 {
 
-   
-    public BattleCardTriggerTime triggerTime;//p
+
+    public BattleCardTriggerTime triggerTime;
     
 
 
-    public Func<Land, int> CardFunc;//p
+    public Func<Land, int> CardFunc;
 
     public BattleCard( BattleCardTriggerTime triggerTime,Func<Land,int> CardFunc)
     {

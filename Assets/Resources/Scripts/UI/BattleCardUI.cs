@@ -18,18 +18,9 @@ public class BattleCardUI : UINode {
     public int arrayIndex;
     public bool isSelfCard;
     public BattleCardTriggerTime triggerTime;
+    public CardEffectType cardEffectType;
     public Func<Land, int> CardFunc;
-    public void InitCardInfo(int cardId,Sprite sprite,string goldCost,string cardName,bool isSelfCard, int arrayIndex,BattleCardTriggerTime triggerTime, Func<Land,int> CardFunc)
-    {
-        this.cardId = cardId;
-        BG.sprite = sprite;
-        this.goldCost.text = goldCost;
-        this.cardName.text = cardName;
-        this.isSelfCard = isSelfCard;
-        this.arrayIndex = arrayIndex;
-        this.CardFunc = CardFunc;
-        this.triggerTime = triggerTime;
-    }
+
     public void InitCardInfo(CardModel cardModel,int arrayIndex,Func<Land,int> CardFunc)
     {
         this.cardId = cardModel.cardID;
@@ -40,6 +31,7 @@ public class BattleCardUI : UINode {
         this.arrayIndex = arrayIndex;
         triggerTime = (BattleCardTriggerTime)Enum.Parse(typeof(BattleCardTriggerTime), cardModel.cardTriggerTime);
         this.CardFunc = CardFunc;
+        cardEffectType = (CardEffectType)Enum.Parse(typeof(CardEffectType), cardModel.cardEffectType);
     }
 
     private bool canClick ;

@@ -34,6 +34,8 @@ public class BattleMap :MonoBehaviour,IPointerEnterHandler,IPointerClickHandler,
     private Tilemap campMap;
     [SerializeField]
     private Tilemap terrianMap;
+    [SerializeField]
+    private Tilemap cannonMap;
 
     private static readonly string CAPITAL_TILE_PATH = "Tiles/terrainTiles/capital_unit";
     private Tile CapitalTile;
@@ -218,7 +220,7 @@ public class BattleMap :MonoBehaviour,IPointerEnterHandler,IPointerClickHandler,
 
                 Map[x, y].InitialLandInfo(curCamp.campID);
                 //用tilemap接口绘制该地块
-                campMap.SetTile(Map[x, y].CoordinateInMap, curCamp.tile);
+                campMap.SetTile(Map[x, y].CoordinateInMap, curCamp.campTile);
                 //在每个阵营的地块坐标List中加入他们的坐标
                 curCampLands.Add(Map[x, y]);
                 //分配完地块给初始金币
@@ -419,6 +421,15 @@ public class BattleMap :MonoBehaviour,IPointerEnterHandler,IPointerClickHandler,
         campMap.gameObject.SetActive(show);
     }
 
+    /// <summary>
+    /// 给某地炮图标层赋值
+    /// </summary>
+    /// <param name="coordinate"></param>
+    /// <param name="tile"></param>
+    public void SetCannonTile(Vector3Int coordinate, Tile tile)
+    {
+        cannonMap.SetTile(coordinate,tile);
+    }
     #endregion
 
     #region 鼠标事件

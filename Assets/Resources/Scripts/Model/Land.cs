@@ -42,7 +42,7 @@ public class Land  {
     public BattleCard BattleCard
     {
         get { return _battleCard; }
-        set { _battleCard = value; }
+        private set { _battleCard = value; }
     }
     
     //有几个战斗单位
@@ -264,7 +264,7 @@ public class Land  {
     {
         return BattleUnit;
     }
-    #region 卡牌相关代码
+    #region 卡牌效果函数
     /// <summary>
     /// 摇骰子根据卡牌获得的额外收益
     /// </summary>
@@ -296,25 +296,65 @@ public class Land  {
         BattleCard.CardFunc(this);
         BattleCard = null;
     }
-
-    public bool UseCardConsume(BattleCardUI battleCardUI)
+    #endregion
+    #region 卡牌相关函数
+    /// <summary>
+    /// 消耗卡牌的费用
+    /// </summary>
+    /// <param name="battleCardUI"></param>
+    /// <returns></returns>
+    private void UseCardConsume(BattleCardUI battleCardUI )
     {
         int goldCost = GameDataSet.Instance.CardModelDic[battleCardUI.cardId].costGold;
         int populationCost = GameDataSet.Instance.CardModelDic[battleCardUI.cardId].costPopulation;
-        if (goldCost <= BattleManager.Instance.CurCamp.OwnGold && leftPopulation >= populationCost)
+        
+        BattleManager.Instance.CurCamp.ReduceCampGold(goldCost);
+        leftPopulation -= populationCost;          
+    }
+
+    /// <summary>
+    /// 该地是否能放置该卡牌
+    /// </summary>
+    /// <param name="battleCardUI"></param>
+    /// <returns></returns>
+    public bool LandCanUseCard(BattleCardUI battleCardUI)
+    {
+        int goldCost = GameDataSet.Instance.CardModelDic[battleCardUI.cardId].costGold;
+        int populationCost = GameDataSet.Instance.CardModelDic[battleCardUI.cardId].costPopulation;
+
+        return goldCost <= BattleManager.Instance.CurCamp.OwnGold && leftPopulation >= populationCost;
+    }
+    public void UseCard(BattleCardUI battleCardUI)
+    {
+        UseCardConsume(battleCardUI);
+        if (battleCardUI.triggerTime.Equals(BattleCardTriggerTime.IMMEDIATELY))
         {
-            BattleManager.Instance.CurCamp.ReduceCampGold(goldCost);
-            leftPopulation -= populationCost;
-            if (BattleManager.Instance.BATTLE_EVENT_USE_CARD!=null)
-            {
-                BattleManager.Instance.BATTLE_EVENT_USE_CARD();
-            }
-            return true;
+            battleCardUI.CardFunc(this);
         }
-        GlobalUImanager.Instance.OpenPopTip().GetComponent<PopTip>().SetContent("资源不足，不能布置卡牌！");
-        return false;
+        else
+        {
+            BattleCard = new BattleCard(battleCardUI.triggerTime, battleCardUI.CardFunc); 
+        }
+        if (BattleManager.Instance.BATTLE_EVENT_USE_CARD != null)
+        {
+            BattleManager.Instance.BATTLE_EVENT_USE_CARD();
+        }
+        Debug.Log("使用成功");
+    }
 
+    public bool HasCard()
+    {
+        return BattleCard != null;
+    }
 
+    public void ClearAttackCard()
+    {
+        BattleCardTriggerTime landCardTrigger = BattleCard.triggerTime;
+        if (landCardTrigger.Equals(BattleCardTriggerTime.ATTACK_DICE_ROLL) || landCardTrigger.Equals(BattleCardTriggerTime.ATTACK_END_POINT)
+            || landCardTrigger.Equals(BattleCardTriggerTime.ATTACK_LOSE))
+        {
+            BattleCard = null;
+        }
     }
     #endregion
 }

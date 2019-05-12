@@ -49,9 +49,11 @@ public class Camp  {
     //卡牌效果额外buff
     public CampBuffCardEffect CampBuffCardEffect = new CampBuffCardEffect();
     //该阵营使用的tile
-    public Tile tile;
+    public Tile campTile;
     //该阵营的基本士兵图片
     public Sprite baseUnitSprite;
+    //该阵营的大炮Tile
+    public Tile cannonTile;
     //玩家名字
     public string PlayerName;
 
@@ -69,16 +71,17 @@ public class Camp  {
         get { return _battleCardUIs; }
         set { _battleCardUIs = value; }
     }
-    public Camp(int campID, string name, int initialLands, Tile tile, Sprite baseUnitSprite ,string PlayerName,int cardStartIndex,int cardEndIndex)
+    public Camp(int campID, string name, int initialLands, Tile campTile, Tile cannonTile,Sprite baseUnitSprite ,string PlayerName,int cardStartIndex,int cardEndIndex)
     {
         this.campID = campID;
         this.name = name;
-        this.tile = tile;
+        this.campTile = campTile;
         this.initialLands = initialLands;
         this.baseUnitSprite = baseUnitSprite;
         this.PlayerName = PlayerName;
         this.cardStartIndex = cardStartIndex;
         this.cardEndIndex = cardEndIndex;
+        this.cannonTile = cannonTile;
         ownedLands = new List<Land>();
         CardEnum_FuncDic = new Dictionary<BattleCardFuncEnum, Func<Land, int>>();
         BattleCardUIs = new List<BattleCardUI>();
@@ -92,7 +95,7 @@ public class Camp  {
     //该阵营买高炮所需要的金币
     public virtual int BuyCannonCoumeGold
     {
-        get { return 5; }
+        get { return 2; }
     }
     //该阵营用高炮轰炸一次需要的金币
     public virtual int CannonAttackConsumGold
@@ -138,15 +141,20 @@ public class Camp  {
         int realConsumeGold = hasCardBuff ? AttackConsumeGold - CampBuffCardEffect.AttackConsumeReduce : AttackConsumeGold;
         ReduceCampGold(realConsumeGold);
     }
-    public bool CannonAttack()
+    public bool CanCannonAttack()
     {
         int realConsumeGold = hasCardBuff ? CannonAttackConsumGold - CampBuffCardEffect.BombConsumeReduce : CannonAttackConsumGold;
         if (OwnGold > realConsumeGold)
         {
-            ReduceCampGold(realConsumeGold);
             return true;
         }
         return false;
+    }
+
+    public void CannnoAttackConsume()
+    {
+        int realConsumeGold = hasCardBuff ? CannonAttackConsumGold - CampBuffCardEffect.BombConsumeReduce : CannonAttackConsumGold;
+        ReduceCampGold(realConsumeGold);
     }
     /// <summary>
     /// 每个回合结束时把阵营持续进攻buff去掉

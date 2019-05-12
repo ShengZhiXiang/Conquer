@@ -28,7 +28,7 @@ public class NoneAttackState : AttackStateBase
         else
         {
             Debug.Log("空闲状态下的取消操作");
-            Cancel();
+            MyRound.Cancel();
         }     
     }
     private Vector3 mousePosition;
@@ -85,7 +85,7 @@ public class NoneAttackState : AttackStateBase
                     MyRound.CurAttackState = MyRound.AttackStateDic[AttackStateEnum.ArmyAttack];
                     MyRound.CurAttackState.attackLand = attackLand;                 
                     //周围敌方格子有高亮框
-                    MyRound.CurAttackState.SetNeighborEnemyHighLight(attackLand.CoordinateInMap);                    
+                    MyRound.HighLightNeighborEnemyLands(attackLand);                    
                 }
                 else
                 {
@@ -104,6 +104,9 @@ public class NoneAttackState : AttackStateBase
                  if (BattleManager.Instance.CurCamp.PurchaseCannon())
                  {
                      attackLand.cannon.isOwned = true;
+                     //设置贴图为有炮的
+                     //todo
+                     BattleManager.Instance.SetLandCannonTile(attackLand);
                      if (BattleManager.Instance.BATTLE_EVENT_PURCHASE_CANNON!=null)
                      {
                          BattleManager.Instance.BATTLE_EVENT_PURCHASE_CANNON();
@@ -112,9 +115,7 @@ public class NoneAttackState : AttackStateBase
                  else
                  {
                      GlobalUImanager.Instance.OpenPopTip().GetComponent<PopTip>().SetContent("你没钱奥！");
-                 }
-               
-               
+                 }          
                HideLandOpearteMenu();
               });
         }
@@ -130,10 +131,8 @@ public class NoneAttackState : AttackStateBase
                     //进入轰炸进攻状态
                     MyRound.CurAttackState = MyRound.AttackStateDic[AttackStateEnum.BombAttack];
                     MyRound.CurAttackState.attackLand = attackLand;
-                    //设置贴图为有炮的
-                    //todo
                     //周围敌方格子有高亮框
-                    MyRound.CurAttackState.SetNeighborEnemyHighLight(attackLand.CoordinateInMap);                   
+                    MyRound.HighLightNeighborEnemyLands(attackLand);                   
                 }
                 else//否则提示处于冷却中
                 {

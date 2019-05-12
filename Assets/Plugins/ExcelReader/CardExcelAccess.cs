@@ -24,6 +24,7 @@ public class CardExcelAccess : ExcelAccessBase<CardModel> {
                 costPopulation = int.Parse(collection[i][6].ToString()),
                 cardTriggerTime = collection[i][7].ToString(),
                 isSelfCard = int.Parse(collection[i][8].ToString()),
+                cardEffectType = collection[i][9].ToString(),
             };
 
             result.Add(campModel);

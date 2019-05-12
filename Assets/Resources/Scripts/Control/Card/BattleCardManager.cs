@@ -2,6 +2,13 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+public enum CardEffectType
+{
+    BombOtherCamp,
+    CampBuff,
+    DefenceOwnWeakLand,
+    AttackOwnStrongLand,
+}
 public enum BattleCardFuncEnum
 {
     BOMB,
@@ -98,12 +105,11 @@ public class BattleCardManager : Singleton<BattleCardManager> {
 
     public void CancelSelectCard()
     {
-        List<BattleCardUI> CurCampCards = BattleManager.Instance.CurCamp.BattleCardUIs;
         if (CurSelectCard==null)
         {
             return;
         }
-        CurCampCards[CurSelectCard.arrayIndex].BackToNormal();
+        CurSelectCard.BackToNormal();
         BattleManager.Instance.SetCampLandsHighLight(CurSelectCard.isSelfCard, false);
         CurSelectCard = null; 
     }
@@ -175,6 +181,25 @@ public class BattleCardManager : Singleton<BattleCardManager> {
         BattleManager.Instance.SetCampLandsHighLight(isMycampCard, false);
     }
 
+    public void DestroyCardInAIState(BattleCardUI battleCardUI,Land land)
+    {
+        Destroy(battleCardUI.gameObject);
+        land.LandHighLightSide.ShowSelf(HighLightType.Single,false);
+    }
+    public void ResetCardInAIState(List<int> toDeleteCardIndexList)
+    {
+        List<BattleCardUI> CurCampCards = BattleManager.Instance.CurCamp.BattleCardUIs;
+        foreach (int cardIndex in toDeleteCardIndexList)
+        {
+            CurCampCards.RemoveAt(cardIndex);
+        }
+        //重新赋值下顺序
+        for (int i = 0; i < CurCampCards.Count; i++)
+        {
+            CurCampCards[i].arrayIndex = i;
+        }
+    }
+
     private void HideBattleCards()
     {
         List<BattleCardUI> CurCampCards = BattleManager.Instance.CurCamp.BattleCardUIs;
@@ -195,6 +220,7 @@ public class BattleCardManager : Singleton<BattleCardManager> {
         }
     }
 
+   
     #region 卡牌方法函数
     private int AirRaid(Land land)
     {

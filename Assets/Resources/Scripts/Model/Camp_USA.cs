@@ -14,8 +14,8 @@ public class Camp_USA : Camp {
         }
     }
 
-    public Camp_USA(int campID, string name, int initialLands, Tile tile, Sprite baseUnitSprite, string PlayerName,int cardStartIndex,int cardEndIndex)
-        : base(campID, name, initialLands, tile, baseUnitSprite, PlayerName, cardStartIndex, cardEndIndex)
+    public Camp_USA(int campID, string name, int initialLands, Tile campTile,Tile cannonTile, Sprite baseUnitSprite, string PlayerName,int cardStartIndex,int cardEndIndex)
+        : base(campID, name, initialLands, campTile,cannonTile, baseUnitSprite, PlayerName, cardStartIndex, cardEndIndex)
     {
         CardEnum_FuncDic.Add(BattleCardFuncEnum.ATOMIC_BOMB,AtomicBomb);
     }

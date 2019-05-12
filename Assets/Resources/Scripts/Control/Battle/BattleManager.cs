@@ -272,26 +272,27 @@ public class BattleManager : Singleton<BattleManager> {
 
     public Camp CreateCamp(CampModel campModel,int landCount,string playerName)
     {
-        Tile campTile = Resources.Load<Tile>(campModel.tilePath);
+        Tile campTile = Resources.Load<Tile>(campModel.campTilePath);
+        Tile cannonTile = Resources.Load<Tile>(campModel.cannonTilePath);
         Sprite baseUnitSprite = Resources.Load<Sprite>(campModel.baseUnitSpritePath);
         Camp result;
         CAMP_NAME campClassName = (CAMP_NAME)Enum.Parse(typeof(CAMP_NAME), campModel.campClassName);
         switch (campClassName)
         {
             case CAMP_NAME.GERMANY:
-                result = new Camp_Germany(campModel.campID, campModel.campName, landCount, campTile, baseUnitSprite, playerName,campModel.cardStartIndex,campModel.cardEndIndex);
+                result = new Camp_Germany(campModel.campID, campModel.campName, landCount, campTile, cannonTile, baseUnitSprite, playerName,campModel.cardStartIndex,campModel.cardEndIndex);
                 break;
             case CAMP_NAME.USA:
-                result = new Camp_USA(campModel.campID, campModel.campName, landCount, campTile, baseUnitSprite, playerName, campModel.cardStartIndex, campModel.cardEndIndex);
+                result = new Camp_USA(campModel.campID, campModel.campName, landCount, campTile, cannonTile, baseUnitSprite, playerName, campModel.cardStartIndex, campModel.cardEndIndex);
                 break;
             case CAMP_NAME.JAPAN:
-                result = new Camp_Japan(campModel.campID, campModel.campName, landCount, campTile, baseUnitSprite, playerName, campModel.cardStartIndex, campModel.cardEndIndex);
+                result = new Camp_Japan(campModel.campID, campModel.campName, landCount, campTile, cannonTile, baseUnitSprite, playerName, campModel.cardStartIndex, campModel.cardEndIndex);
                 break;
             case CAMP_NAME.SOVIET:
-                result = new Camp_Soviet(campModel.campID, campModel.campName, landCount, campTile, baseUnitSprite, playerName, campModel.cardStartIndex, campModel.cardEndIndex);
+                result = new Camp_Soviet(campModel.campID, campModel.campName, landCount, campTile, cannonTile, baseUnitSprite, playerName, campModel.cardStartIndex, campModel.cardEndIndex);
                 break;
             default:
-                result = new Camp(campModel.campID, campModel.campName, landCount, campTile, baseUnitSprite, playerName, campModel.cardStartIndex, campModel.cardEndIndex);
+                result = new Camp(campModel.campID, campModel.campName, landCount, campTile, cannonTile, baseUnitSprite, playerName, campModel.cardStartIndex, campModel.cardEndIndex);
                 break;
         }
         return result; 
@@ -406,6 +407,7 @@ public class BattleManager : Singleton<BattleManager> {
         //地块上的卡牌获得的额外投掷次数
         BattleCardTriggerTime diceRoll = isAttack ? BattleCardTriggerTime.ATTACK_DICE_ROLL : BattleCardTriggerTime.DEFENCE_DICE_ROLL;
         int cardExtraDiceRolls = land.GetExtraIncreaseByCard(diceRoll);
+        Debug.Log(camp.name + "阵营地块卡牌额外投掷次数是" + cardExtraDiceRolls);
         //阵营获得的额外投掷次数（坦克，飞机等+1）
         int campExtraDiceRolls = camp.GetExtraDiceRollsAttackByLand(land,isAttack);
         int finalDiceRolls = basicDiceRolls + cardExtraDiceRolls + campExtraDiceRolls;
@@ -448,6 +450,7 @@ public class BattleManager : Singleton<BattleManager> {
         attackLand.SetLandInfo(attackLand.CampID, 1, new Cannon());
         //替换成没有炮的tile
         //todo  
+        BattleMap.SetCannonTile(attackLand.CoordinateInMap,null);
         //进攻失败，卡牌有啥表示没
         attackLand.AfterFightCardEffect(BattleCardTriggerTime.ATTACK_LOSE);
     }
@@ -456,27 +459,30 @@ public class BattleManager : Singleton<BattleManager> {
     {
         int winLandLeftUnit = 0;
         //显示上重新绘制防守地块上的Tile
-        BattleMap.ResetCampTile(defenceLand.CoordinateInMap, CampDic[attackLand.CampID].tile);
+        BattleMap.ResetCampTile(defenceLand.CoordinateInMap, CurCamp.campTile);
         //从防守地块列表中删除该地块
         CampDic[defenceLand.CampID].ownedLands.Remove(defenceLand);
         Cannon oldCannon = attackLand.cannon;
         //给攻下的这块地重新赋值,土遁：高炮转移术！
         winLandLeftUnit = attackLand.BattleUnit - 1;
         defenceLand.SetLandInfo(attackLand.CampID, winLandLeftUnit, oldCannon);
+        //新地设置成有炮的tile
+        //todo
+        BattleMap.SetCannonTile(defenceLand.CoordinateInMap, CurCamp.cannonTile);
         //防守失败，卡牌有啥表示没？
         defenceLand.AfterFightCardEffect(BattleCardTriggerTime.DEFENCE_LOSE);
-        //进攻成功，阵营有buff加成否？
-        Camp camp = CampDic[attackLand.CampID];
-        if (camp.hasCardBuff && camp.CampBuffCardEffect.VictoryCB != null)
+        //进攻成功，阵营有buff加成否？ 
+        if (CurCamp.hasCardBuff && CurCamp.CampBuffCardEffect.VictoryCB != null)
         {
-            camp.CampBuffCardEffect.VictoryCB(defenceLand);
+            CurCamp.CampBuffCardEffect.VictoryCB(defenceLand);
         }
         //进攻地块留守一个单位
         attackLand.SetLandInfo(attackLand.CampID, 1, new Cannon());
         //替换成没有炮的tile
         //todo
+        BattleMap.SetCannonTile(attackLand.CoordinateInMap, null);
         //给进攻地块列表加上攻下的这块地
-        CampDic[attackLand.CampID].ownedLands.Add(defenceLand);
+        CurCamp.ownedLands.Add(defenceLand);
     }
     /// <summary>
     /// 模拟骰子随机结果
@@ -510,14 +516,17 @@ public class BattleManager : Singleton<BattleManager> {
         defenceLand.SetLandInfo(defenceLand.CampID, leftUnit);
         attackLand.cannon.isInCool = true;
         attackLand.cannon.lastFire = CurNumOfRounds;
-
+        attackCamp.CannnoAttackConsume();
         if (BATTLE_EVENT_BOMB_ANOTHER_LAND!=null)
         {
             BATTLE_EVENT_BOMB_ANOTHER_LAND();
         }
     }
 
-   
+    public void SetLandCannonTile(Land land)
+    {
+        BattleMap.SetCannonTile(land.CoordinateInMap,CurCamp.cannonTile);
+    }
     /// <summary>
     /// 回合结束
     /// </summary>
@@ -546,18 +555,18 @@ public class BattleManager : Singleton<BattleManager> {
 
         //目前模拟本地人人对战
         //把if括号加上就是人机回合
-        //if (CurCamp == MyCamp)
-        //{
+        if (CurCamp == MyCamp)
+        {
             CurBattleState = BattleStateDictionary[BattleStateEnum.MyRound];
             CurBattleState.EnterStateWithMouse(ref BattleMap.mapEnterAction, ref BattleMap.mapClickAction, ref BattleMap.mapExitAction);
 
-        //}
-        //else
-        //{
-        //    //转到下一回合
-        //    CurBattleState = BattleStateDictionary[BattleStateEnum.AI];
-        //    CurBattleState.EnterState();
-        //}
+        }
+        else
+        {
+            //转到下一回合
+            CurBattleState = BattleStateDictionary[BattleStateEnum.AI];
+            CurBattleState.EnterState();
+        }
 
 
     }
@@ -591,15 +600,9 @@ public class BattleManager : Singleton<BattleManager> {
                 land.cannon.isInCool = !((CurNumOfRounds - cannon.lastFire) >= CampDic.Count);
             }
             //进攻效果的卡牌都去掉
-            if (land.BattleCard != null)
+            if (land.HasCard())
             {
-                BattleCardTriggerTime landCardTrigger = land.BattleCard.triggerTime;
-                if (landCardTrigger.Equals(BattleCardTriggerTime.ATTACK_DICE_ROLL)|| landCardTrigger.Equals(BattleCardTriggerTime.ATTACK_END_POINT)
-                    || landCardTrigger.Equals(BattleCardTriggerTime.ATTACK_LOSE))
-                {
-                    land.BattleCard = null;
-                       
-                }
+                land.ClearAttackCard();
             }
         }
         //当前阵营的卡牌buff取消
@@ -675,4 +678,9 @@ public class BattleManager : Singleton<BattleManager> {
     }
     #endregion
 
+    public void StartBattleCoroutine(IEnumerator enumerator)
+    {
+        StartCoroutine(enumerator);
+
+    }
 }

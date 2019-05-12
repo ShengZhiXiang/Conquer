@@ -13,7 +13,7 @@ public class AttackStateBase  {
 
     public LandOperateMenu LandOperateMenu = GlobalUImanager.Instance.LandOperateMenu.GetComponent<LandOperateMenu>();
     
-    private List<Land> NeighborEnemyLands = new List<Land>();
+    
     public MyRoundState MyRound;
     public Land attackLand;
     
@@ -38,75 +38,22 @@ public class AttackStateBase  {
     {
         LandOperateMenu.ShowSelf(false);
     }
-    public void SetNeighborEnemyHighLight(Vector3Int coordinate)
-    {
-        if (NeighborEnemyLands.Count != 0)
-        {
-            NeighborEnemyLands.Clear();
-        }
-        Vector3Int neighborCoordinate;
-        //以0，0为中心块，检查其四周环绕的六个地块
-        //正上方 （1，0）
-        neighborCoordinate = new Vector3Int(coordinate.x + 1, coordinate.y, 0);
-        CheckNeighborLandHighlight(neighborCoordinate);
-        //右上方 （0，1）
-        neighborCoordinate = coordinate.y % 2 == 0 ? new Vector3Int(coordinate.x, coordinate.y + 1, 0)
-                                                   : new Vector3Int(coordinate.x + 1, coordinate.y + 1, 0);
-        CheckNeighborLandHighlight(neighborCoordinate);
-        //右下方 （-1，1）
-        neighborCoordinate = coordinate.y % 2 == 0 ? new Vector3Int(coordinate.x - 1, coordinate.y + 1, 0)
-                                                   : new Vector3Int(coordinate.x, coordinate.y + 1, 0);
-        CheckNeighborLandHighlight(neighborCoordinate);
-        //正下方 （-1，0）
-        neighborCoordinate = new Vector3Int(coordinate.x - 1, coordinate.y, 0);
-        CheckNeighborLandHighlight(neighborCoordinate);
-        //左下方 （-1，-1）
-        neighborCoordinate = coordinate.y % 2 == 0 ? new Vector3Int(coordinate.x - 1, coordinate.y - 1, 0)
-                                                   : new Vector3Int(coordinate.x, coordinate.y - 1, 0);
-        CheckNeighborLandHighlight(neighborCoordinate);
-        //左上方 （0，-1）
-        neighborCoordinate = coordinate.y % 2 == 0 ? new Vector3Int(coordinate.x, coordinate.y - 1, 0)
-                                                   : new Vector3Int(coordinate.x + 1, coordinate.y - 1, 0);
-        CheckNeighborLandHighlight(neighborCoordinate);
-
-        foreach (Land land in NeighborEnemyLands)
-        {
-            land.LandHighLightSide.ShowSelf(HighLightType.Mutiple);
-        }
-
-    }
-
-    public void CheckNeighborLandHighlight(Vector3Int coordinate)
-    {
-        if (BattleManager.Instance.isCoordinateInMap(coordinate))
-        {
-            Land land = BattleManager.Instance.BattleMap.Coordinate2Land(coordinate);
-            if (land.CampID != attackLand.CampID)
-            {
-                NeighborEnemyLands.Add(land);
-            }
-        }
-    }
+    
     public void CancelHighlight()
     {
-        int i = NeighborEnemyLands.Count;
-        foreach (Land land in NeighborEnemyLands)
-        {
-            land.LandHighLightSide.ShowSelf(HighLightType.Mutiple,false);
-        }
+        List<Land> NeighborEnemyLands = MyRound.NeighborEnemyLands;
         if (NeighborEnemyLands.Count == 0)
         {
             return;
         }
+        foreach (Land land in NeighborEnemyLands)
+        {
+            land.LandHighLightSide.ShowSelf(HighLightType.Mutiple,false);
+        }
+        
         NeighborEnemyLands.Clear();
     }
-    public void Cancel()
-    {
-        HideLandOpearteMenu();
-        CancelHighlight();
-    }
-
-    
+   
 
     
     

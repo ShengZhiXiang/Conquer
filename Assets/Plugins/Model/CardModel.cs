@@ -13,5 +13,6 @@ public struct CardModel  {
     public int costGold;
     public int costPopulation;
     public int isSelfCard;
+    public string cardEffectType;
 
 }

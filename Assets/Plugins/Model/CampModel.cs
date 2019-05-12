@@ -6,7 +6,8 @@ using UnityEngine;
 public struct CampModel  {
     public int campID;
     public string campName;
-    public string tilePath;
+    public string campTilePath;
+    public string cannonTilePath;
     public string baseUnitSpritePath;
     public string campClassName;
     public int cardStartIndex;

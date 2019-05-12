@@ -16,15 +16,17 @@ public  class CampExcelAccess : ExcelAccessBase<CampModel> {
 
         for (int i = 1; i < collection.Count; i++)
         {
+           
             CampModel campModel = new CampModel
             {
                 campID = int.Parse(collection[i][0].ToString()),
                 campName = collection[i][1].ToString(),
-                tilePath = collection[i][2].ToString(),
+                campTilePath = collection[i][2].ToString(),
                 baseUnitSpritePath = collection[i][3].ToString(),
                 campClassName = collection[i][4].ToString(),
                 cardStartIndex = int.Parse(collection[i][5].ToString()),
-                cardEndIndex = int.Parse(collection[i][6].ToString())
+                cardEndIndex = int.Parse(collection[i][6].ToString()),
+                cannonTilePath = collection[i][7].ToString()
             };
 
             result.Add(campModel);

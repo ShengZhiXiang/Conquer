@@ -9,30 +9,28 @@ public class CardAttackState : AttackStateBase {
     public override void ClickAction(Land clickLand)
     {
         base.ClickAction(clickLand);
-
+        BattleCardUI CurCard = BattleCardManager.Instance.CurSelectCard;
         //如果这块地上有牌了，就直接返回
-        if (clickLand.BattleCard != null)
+        if (clickLand.HasCard() && !(CurCard.triggerTime == BattleCardTriggerTime.IMMEDIATELY))
         {
             MyRound.CurAttackState = MyRound.AttackStateDic[AttackStateEnum.NoneAttack];
-            Debug.Log("这块地上只能有一张牌");
+            GlobalUImanager.Instance.OpenPopTip().GetComponent<PopTip>().SetContent("该地已经有卡牌了");
             return;
-        }
-        BattleCardUI CurCard =  BattleCardManager.Instance.CurSelectCard;
+        }  
         bool curLandIsMyCampLand = clickLand.CampID == BattleManager.Instance.CurCamp.campID;
         //如果卡牌放的位置是对的，并且剩余资源足够使用卡牌则放牌，否则跳过
-        if (CurCard != null && !(CurCard.isSelfCard ^ curLandIsMyCampLand) && clickLand.UseCardConsume(CurCard))
+        if (CurCard != null && !(CurCard.isSelfCard ^ curLandIsMyCampLand))
         {
-            if (CurCard.triggerTime.Equals(BattleCardTriggerTime.IMMEDIATELY))
+            if (clickLand.LandCanUseCard(CurCard))
             {
-                CurCard.CardFunc(clickLand);
+                clickLand.UseCard(CurCard);
+                BattleCardManager.Instance.DestroyCard();
             }
             else
             {
-                clickLand.BattleCard = new BattleCard(CurCard.triggerTime,CurCard.CardFunc); 
-            }
-            BattleCardManager.Instance.DestroyCard();
-            Debug.Log("使用成功");
-            
+                GlobalUImanager.Instance.OpenPopTip().GetComponent<PopTip>().SetContent("资源不足，不能布置卡牌！");
+                BattleCardManager.Instance.CancelSelectCard();
+            }       
         }
         else
         {
